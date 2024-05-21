@@ -3,8 +3,7 @@ import os
 
 def start(ports=[10000]):
     '''Starts 1 or more instances of Malmo Minecraft on the given ports.
-    Defaults to one instance running on port 10000.
-    '''
+    Defaults to one instance running on port 10000.'''
 
     cwd = os.getcwd()
 
