@@ -2,6 +2,7 @@ import malmo.MalmoPython as MalmoPython
 import malmoext.malmo_bootstrap as MalmoBootstrap
 from malmo.malmoutils import parse_command_line, get_default_recording_object
 from malmoext.scenario_builder import ScenarioBuilder
+from malmoext.agent import Agent
 from abc import abstractmethod
 import time
 
@@ -15,10 +16,11 @@ class Scenario:
 
     def __init__(self):
         self.__builder = ScenarioBuilder()
+        self.__agents: dict[str, Agent] = {}
 
 
     @abstractmethod
-    def build_scenario(self, builder: ScenarioBuilder):
+    def build_scenario(self, builder: ScenarioBuilder) -> None:
         '''Method that constructs the details of a scenario. An empty ScenarioBuilder is provided as input to this method,
         and is expected to be modified prior to returning.
 
@@ -40,12 +42,12 @@ class Scenario:
 
 
     @abstractmethod
-    def on_tick(self):
+    def on_tick(self, agents: 'dict[str, Agent]') -> None:
         '''Method that is called on each clock tick, where any number of agent actions can be initiated. The full
         list of agent actions can be found at https://github.com/NateRex/malmoext/blob/master/docs/agent_actions.md
 
         The actions performed by an agent may depend on the current game state. Documentation on what state details
-        are observable can be found at https://github.com/NateRex/malmoext/blob/master/docs/agent_state.md
+        are observable can be found at https://github.com/NateRex/malmoext/blob/master/docs/scenario_state.md
 
         Example implementation:
             
@@ -66,7 +68,7 @@ class Scenario:
         pass
     
 
-    def run(self, ports=[10000]):
+    def run(self, ports=[10000]) -> None:
         '''Executes this scenario within the Malmo Minecraft instances running on the given ports. By default, a single
         Malmo Minecraft instance running on port 10000 is assumed.
         
@@ -88,34 +90,39 @@ class Scenario:
             print('No agents present in scenario. Exiting.')
             exit(0)
 
-        # Construct agent client connections
+        # Construct agents
         clientPool = MalmoPython.ClientPool()
-        agentHosts = []
-        for i in range(0, len(self.__builder.agents)):
-            clientPool.add(MalmoPython.ClientInfo('127.0.0.1', ports[i]))
-            agentHosts.append(MalmoPython.AgentHost())
+        agentIdx = 0
+        agentZero = None
+        for builder in self.__builder.agents.values():
+            agent = Agent(builder)
+            self.__agents[agent.get_name()] = agent
+            clientPool.add(MalmoPython.ClientInfo('127.0.0.1', ports[agentIdx]))
+            if (agentZero is None):
+                agentZero = agent
+            agentIdx += 1
 
         # Load the scenario
         mission = MalmoPython.MissionSpec(self.__builder.build(), True)
-        parse_command_line(agentHosts[0])
+        parse_command_line(agentZero.get_host())
 
         # Start the mission
-        hostIdx = 0
-        for host in agentHosts:
-            recordingObject = get_default_recording_object(agentHosts[0], "agent_{}_viewpoint_continuous".format(hostIdx + 1))
-            self.__start_host_mission(host, mission, clientPool, recordingObject, hostIdx, '')
-            hostIdx += 1
+        agentIdx = 0
+        for agent in self.__agents.values():
+            recordingObject = get_default_recording_object(agentZero.get_host(), "agent_{}_viewpoint_continuous".format(agentIdx + 1))
+            self.__start_host_mission(agent, mission, clientPool, recordingObject, agentIdx, '')
+            agentIdx += 1
         
         # Wait for mission to start
-        self.__wait_for_mission_start(agentHosts)
+        self.__wait_for_mission_start()
 
-        # While mission is running, execute agent actions
-        while (agentHosts[0].peekWorldState().is_mission_running):
-            self.on_tick()
-            time.sleep(0.1)
+        # While mission is running, execute agent actions (assume time limit is the same across all agents)
+        while (agentZero.is_mission_active()):
+            self.on_tick(self.__agents)
+            time.sleep(5)   # TODO - Find a good value to use here
 
 
-    def __start_host_mission(self, agent_host, mission, client_pool, recording, role, experimentId):
+    def __start_host_mission(self, agent, mission, client_pool, recording, role, experimentId) -> None:
         '''Attempts to start a mission for an agent host. Will automatically retry on failure. After multiple,
         failures, an error will be reported and the program will exit.'''
 
@@ -124,7 +131,7 @@ class Scenario:
         print("Starting mission for agent ", role)
         while True:
             try:
-                agent_host.startMission(mission, client_pool, recording, role, experimentId)
+                agent.get_host().startMission(mission, client_pool, recording, role, experimentId)
                 break
             except MalmoPython.MissionException as e:
                 errorCode = e.details.errorCode
@@ -152,15 +159,16 @@ class Scenario:
                 exit(1)
         print("startMission called okay.")
 
-    def __wait_for_mission_start(self, agent_hosts):
+    def __wait_for_mission_start(self) -> None:
         '''This method will block execution until all given hosts have succesfully started their mission. If any host
         fails to begin their mission, a timeout error will occur and the program will exit.'''
         print("Waiting for the mission to start", end=' ')
-        start_flags = [False for a in agent_hosts]
+        agents = self.__agents.values()
+        start_flags = [False for a in agents]
         start_time = time.time()
         time_out = 120  # Allow two minutes for mission to start.
         while not all(start_flags) and time.time() - start_time < time_out:
-            states = [a.peekWorldState() for a in agent_hosts]
+            states = [a.get_host().peekWorldState() for a in agents]
             start_flags = [w.has_mission_begun for w in states]
             errors = [e for w in states for e in w.errors]
             if len(errors) > 0:

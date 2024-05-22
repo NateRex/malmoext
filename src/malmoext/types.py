@@ -103,7 +103,7 @@ class Inventory:
         Helmet = 39
 
 
-class Mobs:
+class Mob:
     '''Enumerations describing various types of Minecraft mobs'''
 
     class All(ReflectiveEnum):
@@ -222,7 +222,7 @@ class Mobs:
         Rabbit = "Rabbit"
         Sheep = "Sheep"
 
-class Items:
+class Item:
     '''Enumerations describing Minecraft items'''
 
     class All(ReflectiveEnum):
@@ -465,7 +465,7 @@ class Items:
         rabbit = "rabbit"
         rabbit_stew = "rabbit_stew"
 
-class Blocks(ReflectiveEnum):
+class Block(ReflectiveEnum):
     '''A type of Minecraft block'''
 
     Acacia_door = "acacia_door"

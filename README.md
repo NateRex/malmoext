@@ -20,13 +20,15 @@ pip install malmoext
 
 ## Starting Malmo Minecraft
 
-Prior to running a scenario, instances of Malmo Minecraft must be started. *At least one instance is required for each agent present in your scenario(s).*
+Malmo Minecraft must be started prior to running a scenario. *<ins>At least</ins> one instance is required for each agent present in your scenario(s).*
 
 To spawn one or more instances of Malmo Minecraft:
 
 ```
 python -m malmoext --ports 10000 10001 ...
 ```
+
+Once running, these Malmo Minecraft servers can be reused across multiple scenarios.
 
 ## Running a Scenario
 
@@ -35,6 +37,8 @@ Once one or more instances of Malmo Minecraft is running, you can execute one of
 ```
 python myScenario.py
 ```
+
+For examples on how to build scenarios, check out the [examples folder](examples).
 
 ## Environment Variables
 

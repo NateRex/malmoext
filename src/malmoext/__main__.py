@@ -1,6 +1,7 @@
 import malmoext.malmo_bootstrap
 import argparse
 
+# Parse arguments
 parser = argparse.ArgumentParser(
     prog='malmoext',
     description='Launches one or more Malmo Minecraft instances that can be used to run scenarios')
@@ -12,5 +13,6 @@ parser.add_argument(
                 + 'and where they should run. Defaults to 10000, implying one instance running on port 10000.')
 args = parser.parse_args()
 
+# Run Malmo Minecraft instances
 ports = list(map(int, args.ports))
 malmoext.malmo_bootstrap.start(ports)

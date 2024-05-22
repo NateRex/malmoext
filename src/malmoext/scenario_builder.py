@@ -1,5 +1,5 @@
 from typing import Union
-from malmoext.types import Mobs, Blocks, Items, Direction, Inventory, TimeOfDay, AgentType, Vector
+from malmoext.types import Mob, Block, Item, Direction, Inventory, TimeOfDay, AgentType, Vector
 
 class ScenarioBuilder:
     '''A ScenarioBuilder is the top-level builder used to define the agents and objects present in
@@ -42,6 +42,9 @@ class ScenarioBuilder:
     def add_agent(self, name, type):
         '''Adds a new agent to the scenario. The builder for this new agent can later be accessed via
         the 'agents' dictionary stored on the ScenarioBuilder.'''
+
+        if (name in self.agents):
+            raise Exception('Two agents cannot have the same name: ' + name)
 
         self.agents[name] = AgentBuilder(name, type)
         return self
@@ -111,32 +114,32 @@ class WorldBuilder:
     def friendly_spawning_on(self):
         '''Enables the natural spawning of friendly animals and villagers'''
 
-        for m in Mobs.Peaceful:
+        for m in Mob.Peaceful:
             self.__allowedToSpawn.add(m.value)
         return self
 
     def friendly_spawning_off(self):
         '''Disables the natural spawning of friendly animals and villagers'''
 
-        for m in Mobs.Peaceful:
+        for m in Mob.Peaceful:
             self.__allowedToSpawn.discard(m.value)
         return self
 
     def monster_spawning_on(self):
         '''Enables the natural spawning of hostile enemies'''
 
-        for m in Mobs.Hostile:
+        for m in Mob.Hostile:
             self.__allowedToSpawn.add(m.value)
         return self
 
     def monster_spawning_off(self):
         '''Disables the natural spawning of hostile enemies'''
 
-        for m in Mobs.Hostile:
+        for m in Mob.Hostile:
             self.__allowedToSpawn.discard(m.value)
         return self
 
-    def add_block(self, block: Blocks, p: Vector, variant: Mobs.All = None):
+    def add_block(self, block: Block, p: Vector, variant: Mob.All = None):
         '''Adds a single block to the world. If the block type is a mob spawner, an additional variant value must
         be provided describing the type of mob.'''
 
@@ -146,8 +149,8 @@ class WorldBuilder:
             self.__decoratorsXML += '''<DrawBlock x="{}" y="{}" z="{}" type="{}"/>'''.format(p.x, p.y, p.z, block.value)
         return self
 
-    def add_cube(self, block: Blocks, p1: Vector, p2: Vector,
-            variant: Mobs.All = None):
+    def add_cube(self, block: Block, p1: Vector, p2: Vector,
+            variant: Mob.All = None):
         '''Adds a cuboid consisting of single block type to the world. The cube is formed from two points
         on opposite corners of the cube. If the block type is a mob spawner, an additional variant value must
         be provided describing the type of mob.'''
@@ -158,8 +161,8 @@ class WorldBuilder:
             self.__decoratorsXML += '''<DrawCuboid x1="{}" y1="{}" z1="{}" x2="{}" y2="{}" z2="{}" type="{}"/>'''.format(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, block.value)
         return self
 
-    def add_line(self, block: Blocks, p1: Vector, p2: Vector,
-            variant: Mobs.All = None):
+    def add_line(self, block: Block, p1: Vector, p2: Vector,
+            variant: Mob.All = None):
         '''Adds a line consisting of a single block type to the world. The line is formed from the given
         two points. If the block type is a mob spawner, an additional variant value must be provided describing
         the type of mob.'''
@@ -181,13 +184,13 @@ class WorldBuilder:
             self.__decoratorsXML += '''<DrawSphere x="{}" y="{}" z="{}" radius="{}" type="{}"/>'''.format(center.x, center.y, center.z, radius, block.value)
         return self
 
-    def add_item(self, item: Items, p: Vector):
+    def add_item(self, item: Item, p: Vector):
         '''Adds a drop-item to the world at a specific coordinate location.'''
 
         self.__decoratorsXML += '''<DrawItem x="{}" y="{}" z="{}" type="{}"/>'''.format(p.x, p.y, p.z, item.value)
         return self
 
-    def add_mob(self, mob: Mobs, p: Vector):
+    def add_mob(self, mob: Mob, p: Vector):
         '''Positions a mob at a specific coordinate location.'''
 
         self.__decoratorsXML += '''<DrawEntity x="{}" y="{}" z="{}" type="{}"/>'''.format(p.x, p.y, p.z, mob.value)
@@ -209,14 +212,24 @@ class AgentBuilder:
         '''Constructor. Accepts a name for the new agent being constructed.'''
 
         self.__name = name
-        self._type = type
+        self.__type = type
         self.__pos = Vector(0., 0., 0.)
         self.__dir = Direction.North.value
-        self.__observableDistanceX = 10
-        self.__observableDistanceZ = 10
-        self.__observableDistanceY = 5
+        self.__observableDistances = Vector(10, 5, 10)
         self.__inventoryXML = ''
         self.__handlersXML = ''
+
+    def get_name(self):
+        '''Return the name of this agent'''
+        return self.__name
+    
+    def get_type(self):
+        '''Return this agent's type'''
+        return self.__type
+    
+    def get_observable_distances(self):
+        '''Returns the observable distance of this agent in the x, y, and z directions'''
+        return self.__observableDistances
 
     def set_position(self, pos):
         '''Set the starting location for this agent'''
@@ -231,25 +244,13 @@ class AgentBuilder:
             self.__dir = dir.value
         return self
 
-    def set_observable_distance_x(self, distance: int):
-        '''Sets the observable distance of this agent in the X-axis direction'''
-        self.__observableDistanceX = distance
-        return self
+    def set_observable_distances(self, values: Vector):
+        '''Sets the observable distance of this agent in the x, y, and z directions'''
+        self.__observableDistances = values
 
-    def set_observable_distance_y(self, distance: int):
-        '''Sets the observable distance of this agent in the Y-axis direction'''
-        self.__observableDistanceY = distance
-        return self
-
-    def set_observable_distance_z(self, distance: int):
-        '''Sets the observable distance of this agent in the Z-axis direction'''
-        self.__observableDistanceZ = distance
-        return self
-
-    def add_inventory_item(self, item: Items, slot: Inventory, quantity: int = 1):
+    def add_inventory_item(self, item: Item, slot: Inventory, quantity: int = 1):
         '''Adds an item to the agent's inventory in a given slot. If the item is stackable, a quantity may be specified.'''
         self.__inventoryXML += '''<InventoryItem slot="{}" type="{}" quantity="{}"/>'''.format(slot.value, item.value, quantity)
-        print (self.__inventoryXML)
         return self
 
     def build(self):
@@ -282,4 +283,4 @@ class AgentBuilder:
         </ObservationFromNearbyEntities>
         {}
         </AgentHandlers>
-        </AgentSection>'''.format(self.__name, self.__pos.x, self.__pos.y, self.__pos.z, self.__dir, self.__inventoryXML, -self.__observableDistanceX, -self.__observableDistanceY, -self.__observableDistanceZ, self.__observableDistanceX, self.__observableDistanceY, self.__observableDistanceZ, self.__handlersXML)
+        </AgentSection>'''.format(self.__name, self.__pos.x, self.__pos.y, self.__pos.z, self.__dir, self.__inventoryXML, -self.__observableDistances.x, -self.__observableDistances.y, -self.__observableDistances.z, self.__observableDistances.x, self.__observableDistances.y, self.__observableDistances.z, self.__handlersXML)
