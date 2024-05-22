@@ -1,4 +1,8 @@
 from enum import Enum
+from collections import namedtuple
+
+# Named tuples
+Vector = namedtuple('Vector', 'x y z')
 
 def enum_compare(enumVal1, enumVal2):
     '''Returns true if the two enum literals are equal. Returns false otherwise.'''
@@ -16,6 +20,13 @@ class ReflectiveEnum(Enum):
             return toCheck in cls._value2member_map_
         else:
             return toCheck.value in cls._value2member_map_
+
+
+class AgentType(Enum):
+    '''A type of agent.'''
+
+    CPU = 'CPU'
+    Human = 'Human'
 
 
 class TimeOfDay(ReflectiveEnum):
@@ -42,7 +53,7 @@ class Inventory:
     class HotBar(ReflectiveEnum):
         '''An inventory hotbar slot'''
 
-        _0 = 0,
+        _0 = 0
         _1 = 1
         _2 = 2
         _3 = 3
@@ -86,9 +97,9 @@ class Inventory:
     class Armor(ReflectiveEnum):
         '''An inventory slot used to equip pieces of armor'''
 
-        Boots = 36,
-        Leggings = 37,
-        Chestplate = 38,
+        Boots = 36
+        Leggings = 37
+        Chestplate = 38
         Helmet = 39
 
 

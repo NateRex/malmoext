@@ -1,4 +1,4 @@
-import malmo_bootstrap
+import malmoext.malmo_bootstrap
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -13,4 +13,4 @@ parser.add_argument(
 args = parser.parse_args()
 
 ports = list(map(int, args.ports))
-malmo_bootstrap.start(ports)
+malmoext.malmo_bootstrap.start(ports)
