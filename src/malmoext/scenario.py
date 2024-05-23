@@ -36,7 +36,7 @@ class Scenario:
 
             builder.agents['agent1'].set_position(Vector(0, 4, 0))
 
-            builder.world.addMob(Mobs.Hostile.Zombie, Vector(5, 4, 0))
+            builder.world.addMob(Mobs.Zombie, Vector(5, 4, 0))
         '''
         pass
 
@@ -53,7 +53,7 @@ class Scenario:
             
             agent = getAgent()
 
-            mob = agent.closest_mob(Mobs.Hostile)
+            mob = agent.closest_hostile_mob()
 
             if mob != None:
             

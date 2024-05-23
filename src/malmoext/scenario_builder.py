@@ -1,5 +1,5 @@
 from typing import Union
-from malmoext.types import Mob, Block, Item, Direction, Inventory, TimeOfDay, AgentType, Vector
+from malmoext.types import Mob, Block, Item, Direction, Inventory, TimeOfDay, AgentType, PEACEFUL_MOBS, HOSTILE_MOBS, Vector
 
 class ScenarioBuilder:
     '''A ScenarioBuilder is the top-level builder used to define the agents and objects present in
@@ -105,7 +105,7 @@ class WorldBuilder:
         
         self.__generatorString = '3;7,2*3,2;1;'
         self.__decoratorsXML = ""
-        self.__allowedToSpawn: set[list[str]] = set([])
+        self.__allowedToSpawn: set[list[Mob]] = set([])
 
     def get_mobs_allowed_to_spawn(self):
         '''Returns the set of mob names that are allowed to naturally spawn'''
@@ -114,29 +114,29 @@ class WorldBuilder:
     def friendly_spawning_on(self):
         '''Enables the natural spawning of friendly animals and villagers'''
 
-        for m in Mob.Peaceful:
-            self.__allowedToSpawn.add(m.value)
+        for m in PEACEFUL_MOBS:
+            self.__allowedToSpawn.add(m)
         return self
 
     def friendly_spawning_off(self):
         '''Disables the natural spawning of friendly animals and villagers'''
 
-        for m in Mob.Peaceful:
-            self.__allowedToSpawn.discard(m.value)
+        for m in PEACEFUL_MOBS:
+            self.__allowedToSpawn.discard(m)
         return self
 
     def monster_spawning_on(self):
         '''Enables the natural spawning of hostile enemies'''
 
-        for m in Mob.Hostile:
-            self.__allowedToSpawn.add(m.value)
+        for m in HOSTILE_MOBS:
+            self.__allowedToSpawn.add(m)
         return self
 
     def monster_spawning_off(self):
         '''Disables the natural spawning of hostile enemies'''
 
-        for m in Mob.Hostile:
-            self.__allowedToSpawn.discard(m.value)
+        for m in HOSTILE_MOBS:
+            self.__allowedToSpawn.discard(m)
         return self
 
     def add_block(self, block: Block, p: Vector, variant: Mob.All = None):

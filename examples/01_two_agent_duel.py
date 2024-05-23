@@ -30,5 +30,8 @@ class TwoAgentDuel(Scenario):
         print(agents['agent1'].to_json())
 
 # Run scenario
+print(Mob.All.Bat == Mob.Peaceful.Bat)
+exit(1)
+
 scenario = TwoAgentDuel()
 scenario.run(ports=[10000, 10001])

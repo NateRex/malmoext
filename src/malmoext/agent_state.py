@@ -19,6 +19,9 @@ class AgentState:
 
         return self.__grid[rel_pos]
 
+    def __parse_nearby_entities(self):
+        '''Returns a map containing all nearby entities'''
+
     def __parse_grid(self, raw_data: Any, observable_distances: Vector):
         '''Parses a raw observation object to determine the 3-dimensional grid of blocks surrounding the
         agent. The resulting grid is indexed using block locations relative to the agent.'''

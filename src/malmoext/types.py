@@ -3,10 +3,8 @@ from collections import namedtuple
 
 # Named tuples
 Vector = namedtuple('Vector', 'x y z')
+Entity = namedtuple('Entity', 'id type position quantity')
 
-def enum_compare(enumVal1, enumVal2):
-    '''Returns true if the two enum literals are equal. Returns false otherwise.'''
-    return enumVal1.value == enumVal2.value
 
 
 class ReflectiveEnum(Enum):
@@ -22,11 +20,13 @@ class ReflectiveEnum(Enum):
             return toCheck.value in cls._value2member_map_
 
 
-class AgentType(Enum):
+
+class AgentType(ReflectiveEnum):
     '''A type of agent.'''
 
     CPU = 'CPU'
     Human = 'Human'
+
 
 
 class TimeOfDay(ReflectiveEnum):
@@ -38,6 +38,7 @@ class TimeOfDay(ReflectiveEnum):
     Midnight = 18000
 
 
+
 class Direction(ReflectiveEnum):
     '''Enum type describing compass directions in Minecraft'''
 
@@ -45,6 +46,7 @@ class Direction(ReflectiveEnum):
     East = -90
     South = 0
     West = 90
+
 
 
 class Inventory:
@@ -103,367 +105,363 @@ class Inventory:
         Helmet = 39
 
 
-class Mob:
-    '''Enumerations describing various types of Minecraft mobs'''
+class Mob(ReflectiveEnum):
+    '''A Minecraft mob entity'''
 
-    class All(ReflectiveEnum):
-        '''A Minecraft mob that is of any type.'''
-        
-        Bat = "Bat"
-        Blaze = "Blaze"
-        CaveSpider = "CaveSpider"
-        Chicken = "Chicken"
-        Cow = "Cow"
-        Creeper = "Creeper"
-        Donkey = "Donkey"
-        ElderGuardian = "ElderGuardian"
-        EnderDragon = "EnderDragon"
-        Enderman = "Enderman"
-        Endermite = "Endermite"
-        EvocationIllager = "EvocationIllager"
-        Ghast = "Ghast"
-        Giant = "Giant"
-        Guardian = "Guardian"
-        Horse = "Horse"
-        Husk = "Husk"
-        LavaSlime = "LavaSlime"
-        Llama = "Llama"
-        Mule = "Mule"
-        MushroomCow = "MushroomCow"
-        Ozelot = "Ozelot"
-        Pig = "Pig"
-        PigZombie = "PigZombie"
-        PolarBear = "PolarBear"
-        Rabbit = "Rabbit"
-        Sheep = "Sheep"
-        Shulker = "Shulker"
-        Silverfish = "Silverfish"
-        Skeleton = "Skeleton"
-        SkeletonHorse = "SkeletonHorse"
-        Slime = "Slime"
-        SnowMan = "SnowMan"
-        Spider = "Spider"
-        Squid = "Squid"
-        Stray = "Stray"
-        Vex = "Vex"
-        Villager = "Villager"
-        VillagerGolem = "VillagerGolem"
-        VindicationIllager = "VindicationIllager"
-        Witch = "Witch"
-        WitherBoss = "WitherBoss"
-        WitherSkeleton = "WitherSkeleton"
-        Wolf = "Wolf"
-        Zombie = "Zombie"
-        ZombieHorse = "ZombieHorse"
-        ZombieVillager = "ZombieVillager"
+    Bat = "Bat"
+    Blaze = "Blaze"
+    CaveSpider = "CaveSpider"
+    Chicken = "Chicken"
+    Cow = "Cow"
+    Creeper = "Creeper"
+    Donkey = "Donkey"
+    ElderGuardian = "ElderGuardian"
+    EnderDragon = "EnderDragon"
+    Enderman = "Enderman"
+    Endermite = "Endermite"
+    EvocationIllager = "EvocationIllager"
+    Ghast = "Ghast"
+    Giant = "Giant"
+    Guardian = "Guardian"
+    Horse = "Horse"
+    Husk = "Husk"
+    LavaSlime = "LavaSlime"
+    Llama = "Llama"
+    Mule = "Mule"
+    MushroomCow = "MushroomCow"
+    Ozelot = "Ozelot"
+    Pig = "Pig"
+    PigZombie = "PigZombie"
+    PolarBear = "PolarBear"
+    Rabbit = "Rabbit"
+    Sheep = "Sheep"
+    Shulker = "Shulker"
+    Silverfish = "Silverfish"
+    Skeleton = "Skeleton"
+    SkeletonHorse = "SkeletonHorse"
+    Slime = "Slime"
+    SnowMan = "SnowMan"
+    Spider = "Spider"
+    Squid = "Squid"
+    Stray = "Stray"
+    Vex = "Vex"
+    Villager = "Villager"
+    VillagerGolem = "VillagerGolem"
+    VindicationIllager = "VindicationIllager"
+    Witch = "Witch"
+    WitherBoss = "WitherBoss"
+    WitherSkeleton = "WitherSkeleton"
+    Wolf = "Wolf"
+    Zombie = "Zombie"
+    ZombieHorse = "ZombieHorse"
+    ZombieVillager = "ZombieVillager"
 
-    class Hostile(ReflectiveEnum):
-        '''A type of Minecraft mob that is hostile towards players.'''
+HOSTILE_MOBS = set([
+    Mob.Blaze,
+    Mob.CaveSpider,
+    Mob.Creeper,
+    Mob.ElderGuardian,
+    Mob.EnderDragon,
+    Mob.Enderman,
+    Mob.Endermite,
+    Mob.EvocationIllager,
+    Mob.Ghast,
+    Mob.Guardian,
+    Mob.Husk,
+    Mob.LavaSlime,
+    Mob.PigZombie,
+    Mob.Shulker,
+    Mob.Silverfish,
+    Mob.Skeleton,
+    Mob.Slime,
+    Mob.Spider,
+    Mob.Stray,
+    Mob.Vex,
+    Mob.VindicationIllager,
+    Mob.Witch,
+    Mob.WitherBoss,
+    Mob.WitherSkeleton,
+    Mob.Zombie,
+    Mob.ZombieVillager
+])
 
-        Blaze = "Blaze"
-        CaveSpider = "CaveSpider"
-        Creeper = "Creeper"
-        ElderGuardian = "ElderGuardian"
-        EnderDragon = "EnderDragon"
-        Enderman = "Enderman"
-        Endermite = "Endermite"
-        EvocationIllager = "EvocationIllager"
-        Ghast = "Ghast"
-        Guardian = "Guardian"
-        Husk = "Husk"
-        LavaSlime = "LavaSlime"
-        PigZombie = "PigZombie"
-        Shulker = "Shulker"
-        Silverfish = "Silverfish"
-        Skeleton = "Skeleton"
-        Slime = "Slime"
-        Spider = "Spider"
-        Stray = "Stray"
-        Vex = "Vex"
-        VindicationIllager = "VindicationIllager"
-        Witch = "Witch"
-        WitherBoss = "WitherBoss"
-        WitherSkeleton = "WitherSkeleton"
-        Zombie = "Zombie"
-        ZombieVillager = "ZombieVillager"
+PEACEFUL_MOBS = set([
+    Mob.Bat,
+    Mob.Chicken,
+    Mob.Cow,
+    Mob.Donkey,
+    Mob.Giant,
+    Mob.Horse,
+    Mob.Llama,
+    Mob.Mule,
+    Mob.MushroomCow,
+    Mob.Ozelot,
+    Mob.Pig,
+    Mob.PolarBear,
+    Mob.Rabbit,
+    Mob.Sheep,
+    Mob.SkeletonHorse,
+    Mob.SnowMan,
+    Mob.Squid,
+    Mob.Villager,
+    Mob.VillagerGolem,
+    Mob.Wolf,
+    Mob.ZombieHorse
+])
 
-    class Peaceful(ReflectiveEnum):
-        '''A type of Minecraft mob that is peaceful towards players.'''
+FOOD_MOBS = set([
+    Mob.Chicken,
+    Mob.Cow,
+    Mob.MushroomCow,
+    Mob.Pig,
+    Mob.Rabbit,
+    Mob.Sheep
+])
 
-        Bat = "Bat"
-        Chicken = "Chicken"
-        Cow = "Cow"
-        Donkey = "Donkey"
-        Giant = "Giant"
-        Horse = "Horse"
-        Llama = "Llama"
-        Mule = "Mule"
-        MushroomCow = "MushroomCow"
-        Ozelot = "Ozelot"
-        Pig = "Pig"
-        PolarBear = "PolarBear"
-        Rabbit = "Rabbit"
-        Sheep = "Sheep"
-        SkeletonHorse = "SkeletonHorse"
-        SnowMan = "SnowMan"
-        Squid = "Squid"
-        Villager = "Villager"
-        VillagerGolem = "VillagerGolem"
-        Wolf = "Wolf"
-        ZombieHorse = "ZombieHorse"
 
-    class DropsFood(ReflectiveEnum):
-        '''A type of Minecraft mob that potentially drops food when killed.'''
-
-        Chicken = "Chicken"
-        Cow = "Cow"
-        MushroomCow = "MushroomCow"
-        Pig = "Pig"
-        Rabbit = "Rabbit"
-        Sheep = "Sheep"
 
 class Item:
-    '''Enumerations describing Minecraft items'''
+    '''A Minecraft item'''
 
-    class All(ReflectiveEnum):
-        '''A Minecraft item of any type'''
+    acacia_boat = "acacia_boat"
+    acacia_door = "acacia_door"
+    apple = "apple"
+    armor_stand = "armor_stand"
+    arrow = "arrow"
+    baked_potato = "baked_potato"
+    banner = "banner"
+    bed = "bed"
+    beef = "beef"
+    beetroot = "beetroot"
+    beetroot_seeds = "beetroot_seeds"
+    beetroot_soup = "beetroot_soup"
+    birch_boat = "birch_boat"
+    birch_door = "birch_door"
+    blaze_powder = "blaze_powder"
+    blaze_rod = "blaze_rod"
+    boat = "boat"
+    bone = "bone"
+    book = "book"
+    bow = "bow"
+    bowl = "bowl"
+    bread = "bread"
+    brewing_stand = "brewing_stand"
+    brick = "brick"
+    bucket = "bucket"
+    cake = "cake"
+    carrot = "carrot"
+    carrot_on_a_stick = "carrot_on_a_stick"
+    cauldron = "cauldron"
+    chainmail_boots = "chainmail_boots"
+    chainmail_chestplate = "chainmail_chestplate"
+    chainmail_helmet = "chainmail_helmet"
+    chainmail_leggings = "chainmail_leggings"
+    chest_minecart = "chest_minecart"
+    chicken = "chicken"
+    chorus_fruit = "chorus_fruit"
+    chorus_fruit_popped = "chorus_fruit_popped"
+    clay_ball = "clay_ball"
+    clock = "clock"
+    coal = "coal"
+    command_block_minecart = "command_block_minecart"
+    comparator = "comparator"
+    compass = "compass"
+    cooked_beef = "cooked_beef"
+    cooked_chicken = "cooked_chicken"
+    cooked_fish = "cooked_fish"
+    cooked_mutton = "cooked_mutton"
+    cooked_porkchop = "cooked_porkchop"
+    cooked_rabbit = "cooked_rabbit"
+    cookie = "cookie"
+    dark_oak_boat = "dark_oak_boat"
+    dark_oak_door = "dark_oak_door"
+    diamond = "diamond"
+    diamond_axe = "diamond_axe"
+    diamond_boots = "diamond_boots"
+    diamond_chestplate = "diamond_chestplate"
+    diamond_helmet = "diamond_helmet"
+    diamond_hoe = "diamond_hoe"
+    diamond_horse_armor = "diamond_horse_armor"
+    diamond_leggings = "diamond_leggings"
+    diamond_pickaxe = "diamond_pickaxe"
+    diamond_shovel = "diamond_shovel"
+    diamond_sword = "diamond_sword"
+    dragon_breath = "dragon_breath"
+    dye = "dye"
+    egg = "egg"
+    elytra = "elytra"
+    emerald = "emerald"
+    enchanted_book = "enchanted_book"
+    ender_eye = "ender_eye"
+    ender_pearl = "ender_pearl"
+    experience_bottle = "experience_bottle"
+    feather = "feather"
+    fermented_spider_eye = "fermented_spider_eye"
+    filled_map = "filled_map"
+    fire_charge = "fire_charge"
+    firework_charge = "firework_charge"
+    fireworks = "fireworks"
+    fish = "fish"
+    fishing_rod = "fishing_rod"
+    flint = "flint"
+    flint_and_steel = "flint_and_steel"
+    flower_pot = "flower_pot"
+    furnace_minecart = "furnace_minecart"
+    ghast_tear = "ghast_tear"
+    glass_bottle = "glass_bottle"
+    glowstone_dust = "glowstone_dust"
+    gold_ingot = "gold_ingot"
+    gold_nugget = "gold_nugget"
+    golden_apple = "golden_apple"
+    golden_axe = "golden_axe"
+    golden_boots = "golden_boots"
+    golden_carrot = "golden_carrot"
+    golden_chestplate = "golden_chestplate"
+    golden_helmet = "golden_helmet"
+    golden_hoe = "golden_hoe"
+    golden_horse_armor = "golden_horse_armor"
+    golden_leggings = "golden_leggings"
+    golden_pickaxe = "golden_pickaxe"
+    golden_shovel = "golden_shovel"
+    golden_sword = "golden_sword"
+    gunpowder = "gunpowder"
+    hopper_minecart = "hopper_minecart"
+    iron_axe = "iron_axe"
+    iron_boots = "iron_boots"
+    iron_chestplate = "iron_chestplate"
+    iron_door = "iron_door"
+    iron_helmet = "iron_helmet"
+    iron_hoe = "iron_hoe"
+    iron_horse_armor = "iron_horse_armor"
+    iron_ingot = "iron_ingot"
+    iron_leggings = "iron_leggings"
+    iron_nugget = "iron_nugget"
+    iron_pickaxe = "iron_pickaxe"
+    iron_shovel = "iron_shovel"
+    iron_sword = "iron_sword"
+    item_frame = "item_frame"
+    jungle_boat = "jungle_boat"
+    jungle_door = "jungle_door"
+    lava_bucket = "lava_bucket"
+    lead = "lead"
+    leather = "leather"
+    leather_boots = "leather_boots"
+    leather_chestplate = "leather_chestplate"
+    leather_helmet = "leather_helmet"
+    leather_leggings = "leather_leggings"
+    lingering_potion = "lingering_potion"
+    magma_cream = "magma_cream"
+    map = "map"
+    melon = "melon"
+    melon_seeds = "melon_seeds"
+    milk_bucket = "milk_bucket"
+    minecart = "minecart"
+    mushroom_stew = "mushroom_stew"
+    mutton = "mutton"
+    name_tag = "name_tag"
+    nether_star = "nether_star"
+    nether_wart = "nether_wart"
+    netherbrick = "netherbrick"
+    painting = "painting"
+    paper = "paper"
+    poisonous_potato = "poisonous_potato"
+    porkchop = "porkchop"
+    potato = "potato"
+    potion = "potion"
+    prismarine_crystals = "prismarine_crystals"
+    prismarine_shard = "prismarine_shard"
+    pumpkin_pie = "pumpkin_pie"
+    pumpkin_seeds = "pumpkin_seeds"
+    quartz = "quartz"
+    rabbit = "rabbit"
+    rabbit_foot = "rabbit_foot"
+    rabbit_hide = "rabbit_hide"
+    rabbit_stew = "rabbit_stew"
+    record_11 = "record_11"
+    record_13 = "record_13"
+    record_blocks = "record_blocks"
+    record_cat = "record_cat"
+    record_chirp = "record_chirp"
+    record_far = "record_far"
+    record_mall = "record_mall"
+    record_mellohi = "record_mellohi"
+    record_stal = "record_stal"
+    record_strad = "record_strad"
+    record_wait = "record_wait"
+    record_ward = "record_ward"
+    redstone = "redstone"
+    reeds = "reeds"
+    repeater = "repeater"
+    rotten_flesh = "rotten_flesh"
+    saddle = "saddle"
+    shears = "shears"
+    shield = "shield"
+    shulker_shell = "shulker_shell"
+    sign = "sign"
+    skull = "skull"
+    slime_ball = "slime_ball"
+    snowball = "snowball"
+    spawn_egg = "spawn_egg"
+    speckled_melon = "speckled_melon"
+    spectral_arrow = "spectral_arrow"
+    spider_eye = "spider_eye"
+    splash_potion = "splash_potion"
+    spruce_boat = "spruce_boat"
+    spruce_door = "spruce_door"
+    stick = "stick"
+    stone_axe = "stone_axe"
+    stone_hoe = "stone_hoe"
+    stone_pickaxe = "stone_pickaxe"
+    stone_shovel = "stone_shovel"
+    stone_sword = "stone_sword"
+    string = "string"
+    sugar = "sugar"
+    tipped_arrow = "tipped_arrow"
+    tnt_minecart = "tnt_minecart"
+    totem_of_undying = "totem_of_undying"
+    water_bucket = "water_bucket"
+    wheat = "wheat"
+    wheat_seeds = "wheat_seeds"
+    wooden_axe = "wooden_axe"
+    wooden_door = "wooden_door"
+    wooden_hoe = "wooden_hoe"
+    wooden_pickaxe = "wooden_pickaxe"
+    wooden_shovel = "wooden_shovel"
+    wooden_sword = "wooden_sword"
+    writable_book = "writable_book"
+    written_book = "written_book"
 
-        acacia_boat = "acacia_boat"
-        acacia_door = "acacia_door"
-        apple = "apple"
-        armor_stand = "armor_stand"
-        arrow = "arrow"
-        baked_potato = "baked_potato"
-        banner = "banner"
-        bed = "bed"
-        beef = "beef"
-        beetroot = "beetroot"
-        beetroot_seeds = "beetroot_seeds"
-        beetroot_soup = "beetroot_soup"
-        birch_boat = "birch_boat"
-        birch_door = "birch_door"
-        blaze_powder = "blaze_powder"
-        blaze_rod = "blaze_rod"
-        boat = "boat"
-        bone = "bone"
-        book = "book"
-        bow = "bow"
-        bowl = "bowl"
-        bread = "bread"
-        brewing_stand = "brewing_stand"
-        brick = "brick"
-        bucket = "bucket"
-        cake = "cake"
-        carrot = "carrot"
-        carrot_on_a_stick = "carrot_on_a_stick"
-        cauldron = "cauldron"
-        chainmail_boots = "chainmail_boots"
-        chainmail_chestplate = "chainmail_chestplate"
-        chainmail_helmet = "chainmail_helmet"
-        chainmail_leggings = "chainmail_leggings"
-        chest_minecart = "chest_minecart"
-        chicken = "chicken"
-        chorus_fruit = "chorus_fruit"
-        chorus_fruit_popped = "chorus_fruit_popped"
-        clay_ball = "clay_ball"
-        clock = "clock"
-        coal = "coal"
-        command_block_minecart = "command_block_minecart"
-        comparator = "comparator"
-        compass = "compass"
-        cooked_beef = "cooked_beef"
-        cooked_chicken = "cooked_chicken"
-        cooked_fish = "cooked_fish"
-        cooked_mutton = "cooked_mutton"
-        cooked_porkchop = "cooked_porkchop"
-        cooked_rabbit = "cooked_rabbit"
-        cookie = "cookie"
-        dark_oak_boat = "dark_oak_boat"
-        dark_oak_door = "dark_oak_door"
-        diamond = "diamond"
-        diamond_axe = "diamond_axe"
-        diamond_boots = "diamond_boots"
-        diamond_chestplate = "diamond_chestplate"
-        diamond_helmet = "diamond_helmet"
-        diamond_hoe = "diamond_hoe"
-        diamond_horse_armor = "diamond_horse_armor"
-        diamond_leggings = "diamond_leggings"
-        diamond_pickaxe = "diamond_pickaxe"
-        diamond_shovel = "diamond_shovel"
-        diamond_sword = "diamond_sword"
-        dragon_breath = "dragon_breath"
-        dye = "dye"
-        egg = "egg"
-        elytra = "elytra"
-        emerald = "emerald"
-        enchanted_book = "enchanted_book"
-        ender_eye = "ender_eye"
-        ender_pearl = "ender_pearl"
-        experience_bottle = "experience_bottle"
-        feather = "feather"
-        fermented_spider_eye = "fermented_spider_eye"
-        filled_map = "filled_map"
-        fire_charge = "fire_charge"
-        firework_charge = "firework_charge"
-        fireworks = "fireworks"
-        fish = "fish"
-        fishing_rod = "fishing_rod"
-        flint = "flint"
-        flint_and_steel = "flint_and_steel"
-        flower_pot = "flower_pot"
-        furnace_minecart = "furnace_minecart"
-        ghast_tear = "ghast_tear"
-        glass_bottle = "glass_bottle"
-        glowstone_dust = "glowstone_dust"
-        gold_ingot = "gold_ingot"
-        gold_nugget = "gold_nugget"
-        golden_apple = "golden_apple"
-        golden_axe = "golden_axe"
-        golden_boots = "golden_boots"
-        golden_carrot = "golden_carrot"
-        golden_chestplate = "golden_chestplate"
-        golden_helmet = "golden_helmet"
-        golden_hoe = "golden_hoe"
-        golden_horse_armor = "golden_horse_armor"
-        golden_leggings = "golden_leggings"
-        golden_pickaxe = "golden_pickaxe"
-        golden_shovel = "golden_shovel"
-        golden_sword = "golden_sword"
-        gunpowder = "gunpowder"
-        hopper_minecart = "hopper_minecart"
-        iron_axe = "iron_axe"
-        iron_boots = "iron_boots"
-        iron_chestplate = "iron_chestplate"
-        iron_door = "iron_door"
-        iron_helmet = "iron_helmet"
-        iron_hoe = "iron_hoe"
-        iron_horse_armor = "iron_horse_armor"
-        iron_ingot = "iron_ingot"
-        iron_leggings = "iron_leggings"
-        iron_nugget = "iron_nugget"
-        iron_pickaxe = "iron_pickaxe"
-        iron_shovel = "iron_shovel"
-        iron_sword = "iron_sword"
-        item_frame = "item_frame"
-        jungle_boat = "jungle_boat"
-        jungle_door = "jungle_door"
-        lava_bucket = "lava_bucket"
-        lead = "lead"
-        leather = "leather"
-        leather_boots = "leather_boots"
-        leather_chestplate = "leather_chestplate"
-        leather_helmet = "leather_helmet"
-        leather_leggings = "leather_leggings"
-        lingering_potion = "lingering_potion"
-        magma_cream = "magma_cream"
-        map = "map"
-        melon = "melon"
-        melon_seeds = "melon_seeds"
-        milk_bucket = "milk_bucket"
-        minecart = "minecart"
-        mushroom_stew = "mushroom_stew"
-        mutton = "mutton"
-        name_tag = "name_tag"
-        nether_star = "nether_star"
-        nether_wart = "nether_wart"
-        netherbrick = "netherbrick"
-        painting = "painting"
-        paper = "paper"
-        poisonous_potato = "poisonous_potato"
-        porkchop = "porkchop"
-        potato = "potato"
-        potion = "potion"
-        prismarine_crystals = "prismarine_crystals"
-        prismarine_shard = "prismarine_shard"
-        pumpkin_pie = "pumpkin_pie"
-        pumpkin_seeds = "pumpkin_seeds"
-        quartz = "quartz"
-        rabbit = "rabbit"
-        rabbit_foot = "rabbit_foot"
-        rabbit_hide = "rabbit_hide"
-        rabbit_stew = "rabbit_stew"
-        record_11 = "record_11"
-        record_13 = "record_13"
-        record_blocks = "record_blocks"
-        record_cat = "record_cat"
-        record_chirp = "record_chirp"
-        record_far = "record_far"
-        record_mall = "record_mall"
-        record_mellohi = "record_mellohi"
-        record_stal = "record_stal"
-        record_strad = "record_strad"
-        record_wait = "record_wait"
-        record_ward = "record_ward"
-        redstone = "redstone"
-        reeds = "reeds"
-        repeater = "repeater"
-        rotten_flesh = "rotten_flesh"
-        saddle = "saddle"
-        shears = "shears"
-        shield = "shield"
-        shulker_shell = "shulker_shell"
-        sign = "sign"
-        skull = "skull"
-        slime_ball = "slime_ball"
-        snowball = "snowball"
-        spawn_egg = "spawn_egg"
-        speckled_melon = "speckled_melon"
-        spectral_arrow = "spectral_arrow"
-        spider_eye = "spider_eye"
-        splash_potion = "splash_potion"
-        spruce_boat = "spruce_boat"
-        spruce_door = "spruce_door"
-        stick = "stick"
-        stone_axe = "stone_axe"
-        stone_hoe = "stone_hoe"
-        stone_pickaxe = "stone_pickaxe"
-        stone_shovel = "stone_shovel"
-        stone_sword = "stone_sword"
-        string = "string"
-        sugar = "sugar"
-        tipped_arrow = "tipped_arrow"
-        tnt_minecart = "tnt_minecart"
-        totem_of_undying = "totem_of_undying"
-        water_bucket = "water_bucket"
-        wheat = "wheat"
-        wheat_seeds = "wheat_seeds"
-        wooden_axe = "wooden_axe"
-        wooden_door = "wooden_door"
-        wooden_hoe = "wooden_hoe"
-        wooden_pickaxe = "wooden_pickaxe"
-        wooden_shovel = "wooden_shovel"
-        wooden_sword = "wooden_sword"
-        writable_book = "writable_book"
-        written_book = "written_book"
+FOOD_ITEMS = set([
+    Item.apple,
+    Item.baked_potato,
+    Item.beef,
+    Item.beetroot_soup,
+    Item.bread,
+    Item.cake,
+    Item.carrot,
+    Item.chicken,
+    Item.cooked_beef,
+    Item.cooked_chicken,
+    Item.cooked_fish,
+    Item.cooked_mutton,
+    Item.cooked_porkchop,
+    Item.cooked_rabbit,
+    Item.cookie,
+    Item.fish,
+    Item.golden_apple,
+    Item.golden_carrot,
+    Item.mushroom_stew,
+    Item.mutton,
+    Item.poisonous_potato,
+    Item.porkchop,
+    Item.potato,
+    Item.pumpkin_pie,
+    Item.rabbit,
+    Item.rabbit_stew,
+    Item.rotten_flesh
+])
 
-    class Food(ReflectiveEnum):
-        '''A Minecraft item that can be eaten by players'''
 
-        apple = "apple"
-        baked_potato = "baked_potato"
-        beef = "beef"
-        beetroot_soup = "beetroot_soup"
-        bread = "bread"
-        cake = "cake"
-        carrot = "carrot"
-        chicken = "chicken"
-        cooked_beef = "cooked_beef"
-        cooked_chicken = "cooked_chicken"        
-        cooked_fish = "cooked_fish"
-        cooked_mutton = "cooked_mutton"
-        cooked_porkchop = "cooked_porkchop"
-        cooked_rabbit = "cooked_rabbit"
-        cookie = "cookie"
-        fish = "fish"
-        golden_apple = "golden_apple"
-        golden_carrot = "golden_carrot"
-        mushroom_stew = "mushroom_stew"
-        mutton = "mutton"
-        porkchop = "porkchop"
-        potato = "potato"
-        pumpkin_pie = "pumpkin_pie"
-        rabbit = "rabbit"
-        rabbit_stew = "rabbit_stew"
 
 class Block(ReflectiveEnum):
     '''A type of Minecraft block'''
