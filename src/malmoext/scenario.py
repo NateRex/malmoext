@@ -30,7 +30,7 @@ class Scenario:
 
             builder.set_time_limit(30.0)
 
-            builder.add_agent('agent1', AgentType.CPU)
+            builder.add_agent('agent1')
 
             builder.agents['agent1'].addInventory(Items.All.diamond_sword, Inventory.HotBar._0)
 
@@ -116,8 +116,12 @@ class Scenario:
         # Wait for mission to start
         self.__wait_for_mission_start()
 
-        # While mission is running, execute agent actions (assume time limit is the same across all agents)
+        # While mission is running, repeatedly synchronize the local state with the remote server state,
+        # and execute agent actions (assume the time limit is the same across all agents)
         while (agentZero.is_mission_active()):
+            for agent in self.__agents.values():
+                agent.sync()
+                
             self.on_tick(self.__agents)
             time.sleep(5)   # TODO - Find a good value to use here
 

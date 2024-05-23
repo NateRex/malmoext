@@ -3,7 +3,7 @@ from collections import namedtuple
 
 # Named tuples
 Vector = namedtuple('Vector', 'x y z')
-Entity = namedtuple('Entity', 'id type position quantity')
+Entity = namedtuple('Entity', 'id type name position quantity')
 
 
 
@@ -21,31 +21,23 @@ class ReflectiveEnum(Enum):
 
 
 
-class AgentType(ReflectiveEnum):
-    '''A type of agent.'''
-
-    CPU = 'CPU'
-    Human = 'Human'
-
-
-
 class TimeOfDay(ReflectiveEnum):
     '''Enum type describing unique times of day within Minecraft'''
 
-    Dawn = 0
-    Noon = 6000
-    Sunset = 12000
-    Midnight = 18000
+    dawn = 0
+    noon = 6000
+    sunset = 12000
+    midnight = 18000
 
 
 
 class Direction(ReflectiveEnum):
     '''Enum type describing compass directions in Minecraft'''
 
-    North = 180
-    East = -90
-    South = 0
-    West = 90
+    north = 180
+    east = -90
+    south = 0
+    west = 90
 
 
 
@@ -99,128 +91,141 @@ class Inventory:
     class Armor(ReflectiveEnum):
         '''An inventory slot used to equip pieces of armor'''
 
-        Boots = 36
-        Leggings = 37
-        Chestplate = 38
-        Helmet = 39
+        boots = 36
+        leggings = 37
+        chestplate = 38
+        helmet = 39
 
 
 class Mob(ReflectiveEnum):
     '''A Minecraft mob entity'''
 
-    Bat = "Bat"
-    Blaze = "Blaze"
-    CaveSpider = "CaveSpider"
-    Chicken = "Chicken"
-    Cow = "Cow"
-    Creeper = "Creeper"
-    Donkey = "Donkey"
-    ElderGuardian = "ElderGuardian"
-    EnderDragon = "EnderDragon"
-    Enderman = "Enderman"
-    Endermite = "Endermite"
-    EvocationIllager = "EvocationIllager"
-    Ghast = "Ghast"
-    Giant = "Giant"
-    Guardian = "Guardian"
-    Horse = "Horse"
-    Husk = "Husk"
-    LavaSlime = "LavaSlime"
-    Llama = "Llama"
-    Mule = "Mule"
-    MushroomCow = "MushroomCow"
-    Ozelot = "Ozelot"
-    Pig = "Pig"
-    PigZombie = "PigZombie"
-    PolarBear = "PolarBear"
-    Rabbit = "Rabbit"
-    Sheep = "Sheep"
-    Shulker = "Shulker"
-    Silverfish = "Silverfish"
-    Skeleton = "Skeleton"
-    SkeletonHorse = "SkeletonHorse"
-    Slime = "Slime"
-    SnowMan = "SnowMan"
-    Spider = "Spider"
-    Squid = "Squid"
-    Stray = "Stray"
-    Vex = "Vex"
-    Villager = "Villager"
-    VillagerGolem = "VillagerGolem"
-    VindicationIllager = "VindicationIllager"
-    Witch = "Witch"
-    WitherBoss = "WitherBoss"
-    WitherSkeleton = "WitherSkeleton"
-    Wolf = "Wolf"
-    Zombie = "Zombie"
-    ZombieHorse = "ZombieHorse"
-    ZombieVillager = "ZombieVillager"
+    agent = "Agent"
+    bat = "Bat"
+    blaze = "Blaze"
+    cave_spider = "CaveSpider"
+    chicken = "Chicken"
+    cow = "Cow"
+    creeper = "Creeper"
+    donkey = "Donkey"
+    elder_guardian = "ElderGuardian"
+    ender_dragon = "EnderDragon"
+    enderman = "Enderman"
+    endermite = "Endermite"
+    evocation_villager = "EvocationIllager"           # Malmo has typo, which needs to be replicated here
+    ghast = "Ghast"
+    giant = "Giant"
+    guardian = "Guardian"
+    horse = "Horse"
+    husk = "Husk"
+    lava_slime = "LavaSlime"
+    llama = "Llama"
+    mule = "Mule"
+    mushroom_cow = "MushroomCow"
+    ozelot = "Ozelot"
+    pig = "Pig"
+    pig_zombie = "PigZombie"
+    polar_bear = "PolarBear"
+    rabbit = "Rabbit"
+    sheep = "Sheep"
+    shulker = "Shulker"
+    silverfish = "Silverfish"
+    skeleton = "Skeleton"
+    skeleton_horse = "SkeletonHorse"
+    slime = "Slime"
+    snowman = "SnowMan"
+    spider = "Spider"
+    squid = "Squid"
+    stray = "Stray"
+    vex = "Vex"
+    villager = "Villager"
+    villager_golem = "VillagerGolem"
+    vindication_villager = "VindicationIllager"     # Malmo has typo, which needs to be replicated here
+    witch = "Witch"
+    wither_boss = "WitherBoss"
+    wither_skeleton = "WitherSkeleton"
+    wolf = "Wolf"
+    zombie = "Zombie"
+    zombie_horse = "ZombieHorse"
+    zombie_villager = "ZombieVillager"
+
+    @classmethod
+    def is_hostile(cls, to_check):
+        return to_check in HOSTILE_MOBS
+    
+    @classmethod
+    def is_peaceful(cls, to_check):
+        return to_check in PEACEFUL_MOBS
+    
+    @classmethod
+    def drops_food(cls, to_check):
+        return to_check in FOOD_MOBS
 
 HOSTILE_MOBS = set([
-    Mob.Blaze,
-    Mob.CaveSpider,
-    Mob.Creeper,
-    Mob.ElderGuardian,
-    Mob.EnderDragon,
-    Mob.Enderman,
-    Mob.Endermite,
-    Mob.EvocationIllager,
-    Mob.Ghast,
-    Mob.Guardian,
-    Mob.Husk,
-    Mob.LavaSlime,
-    Mob.PigZombie,
-    Mob.Shulker,
-    Mob.Silverfish,
-    Mob.Skeleton,
-    Mob.Slime,
-    Mob.Spider,
-    Mob.Stray,
-    Mob.Vex,
-    Mob.VindicationIllager,
-    Mob.Witch,
-    Mob.WitherBoss,
-    Mob.WitherSkeleton,
-    Mob.Zombie,
-    Mob.ZombieVillager
+    Mob.blaze,
+    Mob.cave_spider,
+    Mob.creeper,
+    Mob.elder_guardian,
+    Mob.ender_dragon,
+    Mob.enderman,
+    Mob.endermite,
+    Mob.evocation_villager,
+    Mob.ghast,
+    Mob.guardian,
+    Mob.husk,
+    Mob.lava_slime,
+    Mob.pig_zombie,
+    Mob.shulker,
+    Mob.silverfish,
+    Mob.skeleton,
+    Mob.slime,
+    Mob.spider,
+    Mob.stray,
+    Mob.vex,
+    Mob.vindication_villager,
+    Mob.witch,
+    Mob.wither_boss,
+    Mob.wither_skeleton,
+    Mob.zombie,
+    Mob.zombie_villager
 ])
 
 PEACEFUL_MOBS = set([
-    Mob.Bat,
-    Mob.Chicken,
-    Mob.Cow,
-    Mob.Donkey,
-    Mob.Giant,
-    Mob.Horse,
-    Mob.Llama,
-    Mob.Mule,
-    Mob.MushroomCow,
-    Mob.Ozelot,
-    Mob.Pig,
-    Mob.PolarBear,
-    Mob.Rabbit,
-    Mob.Sheep,
-    Mob.SkeletonHorse,
-    Mob.SnowMan,
-    Mob.Squid,
-    Mob.Villager,
-    Mob.VillagerGolem,
-    Mob.Wolf,
-    Mob.ZombieHorse
+    Mob.bat,
+    Mob.chicken,
+    Mob.cow,
+    Mob.donkey,
+    Mob.giant,
+    Mob.horse,
+    Mob.llama,
+    Mob.mule,
+    Mob.mushroom_cow,
+    Mob.ozelot,
+    Mob.pig,
+    Mob.polar_bear,
+    Mob.rabbit,
+    Mob.sheep,
+    Mob.skeleton_horse,
+    Mob.snowman,
+    Mob.squid,
+    Mob.villager,
+    Mob.villager_golem,
+    Mob.wolf,
+    Mob.zombie_horse
 ])
 
 FOOD_MOBS = set([
-    Mob.Chicken,
-    Mob.Cow,
-    Mob.MushroomCow,
-    Mob.Pig,
-    Mob.Rabbit,
-    Mob.Sheep
+    Mob.chicken,
+    Mob.cow,
+    Mob.mushroom_cow,
+    Mob.pig,
+    Mob.rabbit,
+    Mob.sheep
 ])
 
 
 
-class Item:
+class Item(ReflectiveEnum):
     '''A Minecraft item'''
 
     acacia_boat = "acacia_boat"
@@ -431,6 +436,10 @@ class Item:
     writable_book = "writable_book"
     written_book = "written_book"
 
+    @classmethod
+    def is_food(cls, to_check):
+        return to_check in FOOD_ITEMS
+
 FOOD_ITEMS = set([
     Item.apple,
     Item.baked_potato,
@@ -466,239 +475,239 @@ FOOD_ITEMS = set([
 class Block(ReflectiveEnum):
     '''A type of Minecraft block'''
 
-    Acacia_door = "acacia_door"
-    Acacia_fence = "acacia_fence"
-    Acacia_fence_gate = "acacia_fence_gate"
-    Acacia_stairs = "acacia_stairs"
-    Activator_rail = "activator_rail"
-    Air = "air"
-    Anvil = "anvil"
-    Barrier = "barrier"
-    Beacon = "beacon"
-    Bed = "bed"
-    Bedrock = "bedrock"
-    Beetroots = "beetroots"
-    Birch_door = "birch_door"
-    Birch_fence = "birch_fence"
-    Birch_fence_gate = "birch_fence_gate"
-    Birch_stairs = "birch_stairs"
-    Black_shulker_box = "black_shulker_box"
-    Blue_shulker_box = "blue_shulker_box"
-    Bone_block = "bone_block"
-    Bookshelf = "bookshelf"
-    Brewing_stand = "brewing_stand"
-    Brick_block = "brick_block"
-    Brick_stairs = "brick_stairs"
-    Brown_mushroom = "brown_mushroom"
-    Brown_mushroom_block = "brown_mushroom_block"
-    Brown_shulker_box = "brown_shulker_box"
-    Cactus = "cactus"
-    Cake = "cake"
-    Carpet = "carpet"
-    Carrots = "carrots"
-    Cauldron = "cauldron"
-    Chain_command_block = "chain_command_block"
-    Chest = "chest"
-    Chorus_flower = "chorus_flower"
-    Chorus_plant = "chorus_plant"
-    Clay = "clay"
-    Coal_block = "coal_block"
-    Coal_ore = "coal_ore"
-    Cobblestone = "cobblestone"
-    Cobblestone_wall = "cobblestone_wall"
-    Cocoa = "cocoa"
-    Command_block = "command_block"
-    Crafting_table = "crafting_table"
-    Cyan_shulker_box = "cyan_shulker_box"
-    Dark_oak_door = "dark_oak_door"
-    Dark_oak_fence = "dark_oak_fence"
-    Dark_oak_fence_gate = "dark_oak_fence_gate"
-    Dark_oak_stairs = "dark_oak_stairs"
-    Daylight_detector = "daylight_detector"
-    Daylight_detector_inverted = "daylight_detector_inverted"
-    Deadbush = "deadbush"
-    Detector_rail = "detector_rail"
-    Diamond_block = "diamond_block"
-    Diamond_ore = "diamond_ore"
-    Dirt = "dirt"
-    Dispenser = "dispenser"
-    Double_plant = "double_plant"
-    Double_stone_slab = "double_stone_slab"
-    Double_stone_slab2 = "double_stone_slab2"
-    Double_wooden_slab = "double_wooden_slab"
-    Dragon_egg = "dragon_egg"
-    Dropper = "dropper"
-    Emerald_block = "emerald_block"
-    Emerald_ore = "emerald_ore"
-    Enchanting_table = "enchanting_table"
-    End_bricks = "end_bricks"
-    End_gateway = "end_gateway"
-    End_portal = "end_portal"
-    End_portal_frame = "end_portal_frame"
-    End_rod = "end_rod"
-    End_stone = "end_stone"
-    Ender_chest = "ender_chest"
-    Farmland = "farmland"
-    Fence = "fence"
-    Fence_gate = "fence_gate"
-    Fire = "fire"
-    Flower_pot = "flower_pot"
-    Flowing_lava = "flowing_lava"
-    Flowing_water = "flowing_water"
-    Frosted_ice = "frosted_ice"
-    Furnace = "furnace"
-    Glass = "glass"
-    Glass_pane = "glass_pane"
-    Glowstone = "glowstone"
-    Gold_block = "gold_block"
-    Gold_ore = "gold_ore"
-    Golden_rail = "golden_rail"
-    Grass = "grass"
-    Grass_path = "grass_path"
-    Gravel = "gravel"
-    Gray_shulker_box = "gray_shulker_box"
-    Green_shulker_box = "green_shulker_box"
-    Hardened_clay = "hardened_clay"
-    Hay_block = "hay_block"
-    Heavy_weighted_pressure_plate = "heavy_weighted_pressure_plate"
-    Hopper = "hopper"
-    Ice = "ice"
-    Iron_bars = "iron_bars"
-    Iron_block = "iron_block"
-    Iron_door = "iron_door"
-    Iron_ore = "iron_ore"
-    Iron_trapdoor = "iron_trapdoor"
-    Jukebox = "jukebox"
-    Jungle_door = "jungle_door"
-    Jungle_fence = "jungle_fence"
-    Jungle_fence_gate = "jungle_fence_gate"
-    Jungle_stairs = "jungle_stairs"
-    Ladder = "ladder"
-    Lapis_block = "lapis_block"
-    Lapis_ore = "lapis_ore"
-    Lava = "lava"
-    Leaves = "leaves"
-    Leaves2 = "leaves2"
-    Lever = "lever"
-    Light_blue_shulker_box = "light_blue_shulker_box"
-    Light_weighted_pressure_plate = "light_weighted_pressure_plate"
-    Lime_shulker_box = "lime_shulker_box"
-    Lit_furnace = "lit_furnace"
-    Lit_pumpkin = "lit_pumpkin"
-    Lit_redstone_lamp = "lit_redstone_lamp"
-    Lit_redstone_ore = "lit_redstone_ore"
-    Log = "log"
-    Log2 = "log2"
-    Magenta_shulker_box = "magenta_shulker_box"
-    Magma = "magma"
-    Melon_block = "melon_block"
-    Melon_stem = "melon_stem"
-    Mob_spawner = "mob_spawner"
-    Monster_egg = "monster_egg"
-    Mossy_cobblestone = "mossy_cobblestone"
-    Mycelium = "mycelium"
-    Nether_brick = "nether_brick"
-    Nether_brick_fence = "nether_brick_fence"
-    Nether_brick_stairs = "nether_brick_stairs"
-    Nether_wart = "nether_wart"
-    Nether_wart_block = "nether_wart_block"
-    Netherrack = "netherrack"
-    Noteblock = "noteblock"
-    Oak_stairs = "oak_stairs"
-    Observer = "observer"
-    Obsidian = "obsidian"
-    Orange_shulker_box = "orange_shulker_box"
-    Packed_ice = "packed_ice"
-    Pink_shulker_box = "pink_shulker_box"
-    Piston = "piston"
-    Piston_extension = "piston_extension"
-    Piston_head = "piston_head"
-    Planks = "planks"
-    Portal = "portal"
-    Potatoes = "potatoes"
-    Powered_comparator = "powered_comparator"
-    Powered_repeater = "powered_repeater"
-    Prismarine = "prismarine"
-    Pumpkin = "pumpkin"
-    Pumpkin_stem = "pumpkin_stem"
-    Purple_shulker_box = "purple_shulker_box"
-    Purpur_block = "purpur_block"
-    Purpur_double_slab = "purpur_double_slab"
-    Purpur_pillar = "purpur_pillar"
-    Purpur_slab = "purpur_slab"
-    Purpur_stairs = "purpur_stairs"
-    Quartz_block = "quartz_block"
-    Quartz_ore = "quartz_ore"
-    Quartz_stairs = "quartz_stairs"
-    Rail = "rail"
-    Red_flower = "red_flower"
-    Red_mushroom = "red_mushroom"
-    Red_mushroom_block = "red_mushroom_block"
-    Red_nether_brick = "red_nether_brick"
-    Red_sandstone = "red_sandstone"
-    Red_sandstone_stairs = "red_sandstone_stairs"
-    Red_shulker_box = "red_shulker_box"
-    Redstone_block = "redstone_block"
-    Redstone_lamp = "redstone_lamp"
-    Redstone_ore = "redstone_ore"
-    Redstone_torch = "redstone_torch"
-    Redstone_wire = "redstone_wire"
-    Reeds = "reeds"
-    Repeating_command_block = "repeating_command_block"
-    Sand = "sand"
-    Sandstone = "sandstone"
-    Sandstone_stairs = "sandstone_stairs"
-    Sapling = "sapling"
-    Sea_lantern = "sea_lantern"
-    Silver_shulker_box = "silver_shulker_box"
-    Skull = "skull"
-    Slime = "slime"
-    Snow = "snow"
-    Snow_layer = "snow_layer"
-    Soul_sand = "soul_sand"
-    Sponge = "sponge"
-    Spruce_door = "spruce_door"
-    Spruce_fence = "spruce_fence"
-    Spruce_fence_gate = "spruce_fence_gate"
-    Spruce_stairs = "spruce_stairs"
-    Stained_glass = "stained_glass"
-    Stained_glass_pane = "stained_glass_pane"
-    Stained_hardened_clay = "stained_hardened_clay"
-    Standing_banner = "standing_banner"
-    Standing_sign = "standing_sign"
-    Sticky_piston = "sticky_piston"
-    Stone = "stone"
-    Stone_brick_stairs = "stone_brick_stairs"
-    Stone_button = "stone_button"
-    Stone_pressure_plate = "stone_pressure_plate"
-    Stone_slab = "stone_slab"
-    Stone_slab2 = "stone_slab2"
-    Stone_stairs = "stone_stairs"
-    Stonebrick = "stonebrick"
-    Structure_block = "structure_block"
-    Structure_void = "structure_void"
-    Tallgrass = "tallgrass"
-    Tnt = "tnt"
-    Torch = "torch"
-    Trapdoor = "trapdoor"
-    Trapped_chest = "trapped_chest"
-    Tripwire = "tripwire"
-    Tripwire_hook = "tripwire_hook"
-    Unlit_redstone_torch = "unlit_redstone_torch"
-    Unpowered_comparator = "unpowered_comparator"
-    Unpowered_repeater = "unpowered_repeater"
-    Vine = "vine"
-    Wall_banner = "wall_banner"
-    Wall_sign = "wall_sign"
-    Water = "water"
-    Waterlily = "waterlily"
-    Web = "web"
-    Wheat = "wheat"
-    White_shulker_box = "white_shulker_box"
-    Wooden_button = "wooden_button"
-    Wooden_door = "wooden_door"
-    Wooden_pressure_plate = "wooden_pressure_plate"
-    Wooden_slab = "wooden_slab"
-    Wool = "wool"
-    Yellow_flower = "yellow_flower"
-    Yellow_shulker_box = "yellow_shulker_box"
+    acacia_door = "acacia_door"
+    acacia_fence = "acacia_fence"
+    acacia_fence_gate = "acacia_fence_gate"
+    acacia_stairs = "acacia_stairs"
+    activator_rail = "activator_rail"
+    air = "air"
+    anvil = "anvil"
+    barrier = "barrier"
+    beacon = "beacon"
+    bed = "bed"
+    bedrock = "bedrock"
+    beetroots = "beetroots"
+    birch_door = "birch_door"
+    birch_fence = "birch_fence"
+    birch_fence_gate = "birch_fence_gate"
+    birch_stairs = "birch_stairs"
+    black_shulker_box = "black_shulker_box"
+    blue_shulker_box = "blue_shulker_box"
+    bone_block = "bone_block"
+    bookshelf = "bookshelf"
+    brewing_stand = "brewing_stand"
+    brick_block = "brick_block"
+    brick_stairs = "brick_stairs"
+    brown_mushroom = "brown_mushroom"
+    brown_mushroom_block = "brown_mushroom_block"
+    brown_shulker_box = "brown_shulker_box"
+    cactus = "cactus"
+    cake = "cake"
+    carpet = "carpet"
+    carrots = "carrots"
+    cauldron = "cauldron"
+    chain_command_block = "chain_command_block"
+    chest = "chest"
+    chorus_flower = "chorus_flower"
+    chorus_plant = "chorus_plant"
+    clay = "clay"
+    coal_block = "coal_block"
+    coal_ore = "coal_ore"
+    cobblestone = "cobblestone"
+    cobblestone_wall = "cobblestone_wall"
+    cocoa = "cocoa"
+    command_block = "command_block"
+    crafting_table = "crafting_table"
+    cyan_shulker_box = "cyan_shulker_box"
+    dark_oak_door = "dark_oak_door"
+    dark_oak_fence = "dark_oak_fence"
+    dark_oak_fence_gate = "dark_oak_fence_gate"
+    dark_oak_stairs = "dark_oak_stairs"
+    daylight_detector = "daylight_detector"
+    daylight_detector_inverted = "daylight_detector_inverted"
+    deadbush = "deadbush"
+    detector_rail = "detector_rail"
+    diamond_block = "diamond_block"
+    diamond_ore = "diamond_ore"
+    dirt = "dirt"
+    dispenser = "dispenser"
+    double_plant = "double_plant"
+    double_stone_slab = "double_stone_slab"
+    double_stone_slab2 = "double_stone_slab2"
+    double_wooden_slab = "double_wooden_slab"
+    dragon_egg = "dragon_egg"
+    dropper = "dropper"
+    emerald_block = "emerald_block"
+    emerald_ore = "emerald_ore"
+    enchanting_table = "enchanting_table"
+    end_bricks = "end_bricks"
+    end_gateway = "end_gateway"
+    end_portal = "end_portal"
+    end_portal_frame = "end_portal_frame"
+    end_rod = "end_rod"
+    end_stone = "end_stone"
+    ender_chest = "ender_chest"
+    farmland = "farmland"
+    fence = "fence"
+    fence_gate = "fence_gate"
+    fire = "fire"
+    flower_pot = "flower_pot"
+    flowing_lava = "flowing_lava"
+    flowing_water = "flowing_water"
+    frosted_ice = "frosted_ice"
+    furnace = "furnace"
+    glass = "glass"
+    glass_pane = "glass_pane"
+    glowstone = "glowstone"
+    gold_block = "gold_block"
+    gold_ore = "gold_ore"
+    golden_rail = "golden_rail"
+    grass = "grass"
+    grass_path = "grass_path"
+    gravel = "gravel"
+    gray_shulker_box = "gray_shulker_box"
+    green_shulker_box = "green_shulker_box"
+    hardened_clay = "hardened_clay"
+    hay_block = "hay_block"
+    heavy_weighted_pressure_plate = "heavy_weighted_pressure_plate"
+    hopper = "hopper"
+    ice = "ice"
+    iron_bars = "iron_bars"
+    iron_block = "iron_block"
+    iron_door = "iron_door"
+    iron_ore = "iron_ore"
+    iron_trapdoor = "iron_trapdoor"
+    jukebox = "jukebox"
+    jungle_door = "jungle_door"
+    jungle_fence = "jungle_fence"
+    jungle_fence_gate = "jungle_fence_gate"
+    jungle_stairs = "jungle_stairs"
+    ladder = "ladder"
+    lapis_block = "lapis_block"
+    lapis_ore = "lapis_ore"
+    lava = "lava"
+    leaves = "leaves"
+    leaves2 = "leaves2"
+    lever = "lever"
+    light_blue_shulker_box = "light_blue_shulker_box"
+    light_weighted_pressure_plate = "light_weighted_pressure_plate"
+    lime_shulker_box = "lime_shulker_box"
+    lit_furnace = "lit_furnace"
+    lit_pumpkin = "lit_pumpkin"
+    lit_redstone_lamp = "lit_redstone_lamp"
+    lit_redstone_ore = "lit_redstone_ore"
+    log = "log"
+    log2 = "log2"
+    magenta_shulker_box = "magenta_shulker_box"
+    magma = "magma"
+    melon_block = "melon_block"
+    melon_stem = "melon_stem"
+    mob_spawner = "mob_spawner"
+    monster_egg = "monster_egg"
+    mossy_cobblestone = "mossy_cobblestone"
+    mycelium = "mycelium"
+    nether_brick = "nether_brick"
+    nether_brick_fence = "nether_brick_fence"
+    nether_brick_stairs = "nether_brick_stairs"
+    nether_wart = "nether_wart"
+    nether_wart_block = "nether_wart_block"
+    netherrack = "netherrack"
+    noteblock = "noteblock"
+    oak_stairs = "oak_stairs"
+    observer = "observer"
+    obsidian = "obsidian"
+    orange_shulker_box = "orange_shulker_box"
+    packed_ice = "packed_ice"
+    pink_shulker_box = "pink_shulker_box"
+    piston = "piston"
+    piston_extension = "piston_extension"
+    piston_head = "piston_head"
+    planks = "planks"
+    portal = "portal"
+    potatoes = "potatoes"
+    powered_comparator = "powered_comparator"
+    powered_repeater = "powered_repeater"
+    prismarine = "prismarine"
+    pumpkin = "pumpkin"
+    pumpkin_stem = "pumpkin_stem"
+    purple_shulker_box = "purple_shulker_box"
+    purpur_block = "purpur_block"
+    purpur_double_slab = "purpur_double_slab"
+    purpur_pillar = "purpur_pillar"
+    purpur_slab = "purpur_slab"
+    purpur_stairs = "purpur_stairs"
+    quartz_block = "quartz_block"
+    quartz_ore = "quartz_ore"
+    quartz_stairs = "quartz_stairs"
+    rail = "rail"
+    red_flower = "red_flower"
+    red_mushroom = "red_mushroom"
+    red_mushroom_block = "red_mushroom_block"
+    red_nether_brick = "red_nether_brick"
+    red_sandstone = "red_sandstone"
+    red_sandstone_stairs = "red_sandstone_stairs"
+    red_shulker_box = "red_shulker_box"
+    redstone_block = "redstone_block"
+    redstone_lamp = "redstone_lamp"
+    redstone_ore = "redstone_ore"
+    redstone_torch = "redstone_torch"
+    redstone_wire = "redstone_wire"
+    reeds = "reeds"
+    repeating_command_block = "repeating_command_block"
+    sand = "sand"
+    sandstone = "sandstone"
+    sandstone_stairs = "sandstone_stairs"
+    sapling = "sapling"
+    sea_lantern = "sea_lantern"
+    silver_shulker_box = "silver_shulker_box"
+    skull = "skull"
+    slime = "slime"
+    snow = "snow"
+    snow_layer = "snow_layer"
+    soul_sand = "soul_sand"
+    sponge = "sponge"
+    spruce_door = "spruce_door"
+    spruce_fence = "spruce_fence"
+    spruce_fence_gate = "spruce_fence_gate"
+    spruce_stairs = "spruce_stairs"
+    stained_glass = "stained_glass"
+    stained_glass_pane = "stained_glass_pane"
+    stained_hardened_clay = "stained_hardened_clay"
+    standing_banner = "standing_banner"
+    standing_sign = "standing_sign"
+    sticky_piston = "sticky_piston"
+    stone = "stone"
+    stone_brick_stairs = "stone_brick_stairs"
+    stone_button = "stone_button"
+    stone_pressure_plate = "stone_pressure_plate"
+    stone_slab = "stone_slab"
+    stone_slab2 = "stone_slab2"
+    stone_stairs = "stone_stairs"
+    stonebrick = "stonebrick"
+    structure_block = "structure_block"
+    structure_void = "structure_void"
+    tallgrass = "tallgrass"
+    tnt = "tnt"
+    torch = "torch"
+    trapdoor = "trapdoor"
+    trapped_chest = "trapped_chest"
+    tripwire = "tripwire"
+    tripwire_hook = "tripwire_hook"
+    unlit_redstone_torch = "unlit_redstone_torch"
+    unpowered_comparator = "unpowered_comparator"
+    unpowered_repeater = "unpowered_repeater"
+    vine = "vine"
+    wall_banner = "wall_banner"
+    wall_sign = "wall_sign"
+    water = "water"
+    waterlily = "waterlily"
+    web = "web"
+    wheat = "wheat"
+    white_shulker_box = "white_shulker_box"
+    wooden_button = "wooden_button"
+    wooden_door = "wooden_door"
+    wooden_pressure_plate = "wooden_pressure_plate"
+    wooden_slab = "wooden_slab"
+    wool = "wool"
+    yellow_flower = "yellow_flower"
+    yellow_shulker_box = "yellow_shulker_box"
