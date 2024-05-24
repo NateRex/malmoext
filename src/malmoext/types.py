@@ -4,7 +4,7 @@ from collections import namedtuple
 # Named tuples
 Vector = namedtuple('Vector', 'x y z')
 Entity = namedtuple('Entity', 'id type name position quantity')
-
+InventoryItem = namedtuple('InventoryItem', 'type quantity slot')
 
 
 class ReflectiveEnum(Enum):
@@ -14,7 +14,7 @@ class ReflectiveEnum(Enum):
     @classmethod
     def contains(cls, toCheck):
         '''Returns true if the given string is a member of this enum'''
-        if isinstance(toCheck, str):
+        if isinstance(toCheck, str) or isinstance(toCheck, int):
             return toCheck in cls._value2member_map_
         else:
             return toCheck.value in cls._value2member_map_
@@ -57,8 +57,8 @@ class Inventory:
         _7 = 7
         _8 = 8
 
-    class Player(ReflectiveEnum):
-        '''A player inventory slot. This does NOT include hot bar inventory.'''
+    class Main(ReflectiveEnum):
+        '''A main player inventory slot. This does NOT include hot bar inventory.'''
 
         _9 = 9
         _10 = 10

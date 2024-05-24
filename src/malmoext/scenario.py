@@ -123,7 +123,9 @@ class Scenario:
                 agent.sync()
                 
             self.on_tick(self.__agents)
-            time.sleep(5)   # TODO - Find a good value to use here
+            time.sleep(0.1)
+
+        print('Mission has ended.')
 
 
     def __start_host_mission(self, agent, mission, client_pool, recording, role, experimentId) -> None:

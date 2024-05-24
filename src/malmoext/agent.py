@@ -1,8 +1,6 @@
-from typing import Any, Union
 import malmo.MalmoPython as MalmoPython
 from malmoext.scenario_builder import AgentBuilder
-from malmoext.types import Vector, Block, Mob, Item, Entity
-import json
+from malmoext.types import Item, Inventory
 
 class Agent:
     '''An Agent wraps a client connection to a Malmo Minecraft instance, and represents a
@@ -44,86 +42,35 @@ class Agent:
     def sync(self):
         '''Syncs the data cached on this agent with the latest available data from the Malmo Minecraft server'''
         self.state = AgentState(self)
+
+    def equip(self, item_type: Item) -> bool:
+        '''Equips an item from this agent's inventory. If the item does not already exist in the agent's hotbar,
+        it will be swapped with an item from the hotbar. Returns true if successful. Returns false otherwise.'''
         
-
-class AgentState:
-    '''An AgentState represents the observable world from the perspective of a single agent.
-    It represents an alternative representation of the JSON data provided by Malmo.'''
-
-
-    def __init__(self, agent: Agent):
-        '''Constructor. Accepts the agent whose perspective this state represents.'''
+        inventory_item = self.state.get_inventory_item(item_type)
+        if inventory_item is None:
+            return False
         
-        raw_state = agent.get_host().getWorldState()
-        raw_data = json.loads(raw_state.observations[-1].text)
+        # Malmo keys are 1-indexed
+        item_index = inventory_item.slot.value
+        target_index = item_index
 
-        self.__grid = self.__parse_grid(raw_data, agent.get_observable_distances())
-        self.__nearby_entities = self.__parse_nearby_entities(raw_data)
-
-
-    def get_nearby_entities(self):
-        '''Returns a dictionary containing all entities nearby the agent, organized by type.'''
-        return self.__nearby_entities
-
-
-    def get_nearby_block(self, rel_pos: Vector):
-        '''Returns the type of block present at a location, defined in coordinates relative to the agent.
-        
-        For example:
-        
-            get_block(Vector(-1, 0, 0))
-        
-        would return the type one block away in the negative x direction.
-        
-        An exception will be thrown if the caller attempts to access a block outside the obserable range
-        of the agent.'''
-
-        return self.__grid[rel_pos]
-
-
-    def __parse_nearby_entities(self, raw_data):
-        '''Parses a raw observation object to determine all entities near the agent. An entity is defined as a mob,
-        a drop item, or another agent.
-        
-        Returns a dictionary containing all nearby entities to the agent, organized by type.'''
-        
-        entities: dict[Union[Mob, Item], list[Entity]] = {}
-        for obj in raw_data['nearby_entities']:
-
-            if Item.contains(obj['name']):
-                eType = Item(obj['name'])
-            elif Mob.contains(obj['name']):
-                eType = Mob(obj['name'])
-            else:
-                eType = Mob.agent
-
-            ePos = Vector(obj['x'], obj['y'], obj['z'])
-            entity = Entity(obj['id'], eType, obj['name'], ePos, obj.get('quantity', 1))
+        # If item is not already in the hotbar...
+        if not Inventory.HotBar.contains(item_index):
             
-            if (eType in entities):
-                entities[eType].append(entity)
-            else:
-                entities[eType] = [entity]
+            # Try to move item into an empty hotbar slot. Otherwise, swap item with what is currently equipped
+            target_slot = self.state.get_available_hotbar_slot()
+            if target_slot is None:
+                target_slot = self.state.get_currently_equipped_slot()
+            target_index = target_slot.value
+            self.__host.sendCommand('swapInventoryItems {} {}'.format(target_index, item_index))
+
+        # Equip (Malmo keys are 1-indexed)
+        self.__host.sendCommand('hotbar.{} 1'.format(target_index + 1))
+        self.__host.sendCommand('hotbar.{} 0'.format(target_index + 1))
+        return True
+
         
-        return entities
 
-
-    def __parse_grid(self, raw_data: Any, observable_distances: Vector):
-        '''Parses a raw observation object to determine the 3-dimensional grid of blocks surrounding the
-        agent. The resulting grid is indexed using block locations relative to the agent.'''
-        
-        raw_grid = raw_data['blockgrid']
-
-        expected_size = (observable_distances.x * 2 + 1) * (observable_distances.y * 2 + 1) * (observable_distances.z * 2 + 1)
-        actual_size = len(raw_grid)
-        if (expected_size != actual_size):
-            raise Exception('Block grid received from server did not match expected observation size')
-
-        idx = 0
-        grid: dict[Vector, Block] = {}
-        for x in range(-observable_distances.x, observable_distances.x):
-            for z in range(-observable_distances.z, observable_distances.z):
-                for y in range(-observable_distances.y, observable_distances.y):
-                    grid[Vector(x, y, z)] = Block(raw_grid[idx])
-                    idx += 1
-        return grid
+# Additional imports to avoid circular dependencies
+from malmoext.agent_state import AgentState
