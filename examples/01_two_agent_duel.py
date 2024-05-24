@@ -14,7 +14,7 @@ class TwoAgentDuel(Scenario):
         builder.add_agent('agent2')
         builder.agents['agent1'].set_position(Vector(0, 4, 0))
         builder.agents['agent2'].set_position(Vector(10, 4, 0))
-        builder.agents['agent1'].add_inventory_item(Item.diamond_sword, Inventory.Main._17)
+        builder.agents['agent1'].add_inventory_item(Item.diamond_sword, Inventory.HotBar._0)
         builder.agents['agent2'].add_inventory_item(Item.diamond_sword, Inventory.HotBar._0)
 
         # Structures
@@ -29,8 +29,8 @@ class TwoAgentDuel(Scenario):
 
 
     def on_tick(self, agents) -> None:
-        agents['agent1'].equip(Item.diamond_sword)
-
+        pass
+        
 
 
 

@@ -1,6 +1,6 @@
 from typing import Any, Union
 from malmoext.types import Block, Mob, Item, Inventory, Vector, Entity, InventoryItem
-from malmoext.utils import add_or_append
+from malmoext.utils import add_or_append, squared_distance
 from malmoext.agent import Agent
 import json
 
@@ -15,14 +15,65 @@ class AgentState:
         raw_state = agent.get_host().getWorldState()
         raw_data = json.loads(raw_state.observations[-1].text)
 
+        self.__position = self.__parse_position(raw_data)
         self.__grid = self.__parse_grid(raw_data, agent.get_observable_distances())
         self.__nearby_entities = self.__parse_nearby_entities(raw_data)
         self.__inventory = self.__parse_inventory(raw_data)
         self.__equipped_slot = self.__parse_equipped_slot(raw_data)
 
-    def get_nearby_entities(self):
+
+    def get_position(self):
+        '''Returns the current position of this agent'''
+        return self.__position
+    
+
+    def get_entities(self):
         '''Returns a dictionary containing all entities nearby the agent, organized by type.'''
         return self.__nearby_entities
+    
+    
+    def get_entities(self, mob_type: Mob):
+        '''Returns a list containing all nearby entities of the given mob type.'''
+        
+        if mob_type not in self.__nearby_entities:
+            return []
+        
+        return self.__nearby_entities[mob_type]
+
+
+    def get_entity_by_type(self, mob_type: Mob):
+        '''Returns the closest entity to the agent containing the given type. Returns None if no entity with that
+        type exists within the agent's observable range.'''
+
+        if mob_type not in self.__nearby_entities:
+            return None
+        
+        closest_sqrd_distance = None
+        closest_entity = None
+        for entity in self.__nearby_entities[mob_type]:
+            sqrd_distance = squared_distance(self.__position, entity.position)
+            if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
+                closest_sqrd_distance = sqrd_distance
+                closest_entity = entity
+        
+        return closest_entity
+
+
+    def get_entity_by_name(self, name: str):
+        '''Returns the closest entity to the agent containing the given name. Returns None if no entity with that
+        name exists within the agent's observable range.'''
+
+        closest_sqrd_distance = None
+        closest_entity = None
+        for eType in self.__nearby_entities:
+            for entity in self.__nearby_entities[eType]:
+                if entity.name == name:
+                    sqrd_distance = squared_distance(self.__position, entity.position)
+                    if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
+                        closest_sqrd_distance = sqrd_distance
+                        closest_entity = entity
+        
+        return closest_entity
 
 
     def get_nearby_block(self, rel_pos: Vector):
@@ -76,6 +127,12 @@ class AgentState:
                 return slot
             
         return None
+
+
+    def __parse_position(self, raw_data):
+        '''Parses a raw observation object to determine the current position of the agent.'''
+        
+        return Vector(raw_data['xPos'], raw_data['yPos'], raw_data['zPos'])
 
 
     def __parse_nearby_entities(self, raw_data):
