@@ -1,6 +1,5 @@
-from typing import Union
+from typing import Union, NamedTuple
 from enum import Enum
-from collections import namedtuple
 
 class ReflectiveEnum(Enum):
     '''An enumerated type that provides additional utility methods for checking
@@ -708,23 +707,8 @@ class Block(ReflectiveEnum):
     yellow_shulker_box = "yellow_shulker_box"
 
 
-class Vector(namedtuple):
-    '''A 3-dimensional vector'''
-    x: int = 0
-    y: int = 0
-    z: int = 0
-
-
-class Entity(namedtuple):
-    '''An entity instance'''
-    id: str
-    type: Union[Mob, Item]
-    name: str
-    position: Vector
-    quantity: int
-
-
-class InventoryItem(namedtuple):
-    type: Item
-    quantity: int
-    slot: Union[Inventory.HotBar, Inventory.Main, Inventory.Armor]
+# Named tuples
+Vector = NamedTuple('Vector', [('x', float), ('y', float), ('z', float)])
+Rotation = NamedTuple('Rotation', [('yaw', float), ('pitch', float)])
+Entity = NamedTuple('Entity', [('id', str), ('type', Union[Mob, Item]), ('name', str), ('position', Vector), ('quantity', int)])
+InventoryItem = NamedTuple('InventoryItem', [('type', Item), ('quantity', int), ('slot', Union[Inventory.HotBar, Inventory.Main, Inventory.Armor])])

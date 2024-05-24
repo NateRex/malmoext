@@ -1,5 +1,5 @@
 from typing import Any, Union
-from malmoext.types import Block, Mob, Item, Inventory, Vector, Entity, InventoryItem
+from malmoext.types import Block, Mob, Item, Inventory, Vector, Rotation, Entity, InventoryItem
 from malmoext.utils import add_or_append, squared_distance
 from malmoext.agent import Agent
 import json
@@ -16,6 +16,7 @@ class AgentState:
         raw_data = json.loads(raw_state.observations[-1].text)
 
         self.__position = self.__parse_position(raw_data)
+        self.__pov = self.__parse_pov_camera_angles(raw_data)
         self.__grid = self.__parse_grid(raw_data, agent.get_observable_distances())
         self.__nearby_entities = self.__parse_nearby_entities(raw_data)
         self.__inventory = self.__parse_inventory(raw_data)
@@ -26,6 +27,11 @@ class AgentState:
         '''Returns the current position of this agent'''
         return self.__position
     
+
+    def get_pov(self):
+        '''Returns the current camera angles for this agent's point-of-view (POV)'''
+        return self.__pov
+
 
     def get_entities(self):
         '''Returns a dictionary containing all entities nearby the agent, organized by type.'''
@@ -132,7 +138,17 @@ class AgentState:
     def __parse_position(self, raw_data):
         '''Parses a raw observation object to determine the current position of the agent.'''
         
-        return Vector(raw_data['xPos'], raw_data['yPos'], raw_data['zPos'])
+        return Vector(raw_data['XPos'], raw_data['YPos'], raw_data['ZPos'])
+    
+
+    def __parse_pov_camera_angles(self, raw_data):
+        '''Parses a raw observation object to determine the current camera angles of the agent'''
+
+        # Ensure we normalize yaw to the range (0, 360)
+        yaw = raw_data['Yaw']
+        yaw = (yaw + 360) % 360
+        
+        return Rotation(yaw, raw_data['Pitch'])
 
 
     def __parse_nearby_entities(self, raw_data):
