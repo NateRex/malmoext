@@ -111,14 +111,16 @@ class Agent:
         return is_looking_at
     
 
-    def move_to(self, entity: Union[str, Entity]):
+    def move_to(self, entity: Union[str, Entity], keep_distance = 2):
         '''Initiates movement of this agent to another entity, specified either by name or by reference. If multiple
-        entities exist with the given name, the closest one will be targeted.
+        entities exist with the given name, the closest one will be targeted. Optionally specify a number of blocks the
+        agent should keep away from the target (defaults to 2, since two entities cannot occupy the same block). This
+        can be useful in cases where the agent plans to attack or give an item to the target.
         
         Because this transition does not occur instantaneously, this method is inteded to be called repeatedly as part
         of the simulation loop.
         
-        Returns true if the agent is currently at the entity (with a tolerance of 1 block, given that two entities cannot
+        Returns true if the agent is currently at the entity (with a tolerance of 2 blocks, given that two entities cannot
         always occupy the same block). Returns false otherwise.'''
 
         target = entity
@@ -127,7 +129,24 @@ class Agent:
         if target is None:
             return False
         
-        move_rates = self.__compute_move_rates(target.position)
+        move_rates = self.__compute_move_rates(target.position, keep_distance)
+        is_at = True
+
+        # Modify left/right movement rate
+        if equal_tol(move_rates.x, 0, 0.001):
+            self.__host.sendCommand('strafe 0')
+        else:
+            self.__host.sendCommand('strafe {}'.format(move_rates.x))
+            is_at = False
+
+        # Modify forward/backward movement rate
+        if equal_tol(move_rates.z, 0, 0.001):
+            self.__host.sendCommand('move 0')
+        else:
+            self.__host.sendCommand('move {}'.format(move_rates.z))
+            is_at = False
+
+        return is_at
         
     
     def __compute_turn_rates(self, target_position: Vector):
@@ -139,22 +158,23 @@ class Agent:
         pitch_turn_direction = 1 if angle_diffs.pitch >= 0 else -1
 
         # Compute rotation speeds
-        yaw_rate = min(linear_map(abs(angle_diffs.yaw), 0, 180, 0, 2), 1) * yaw_turn_direction
-        pitch_rate = min(linear_map(abs(angle_diffs.pitch), 0, 180, 0, 2), 1) * pitch_turn_direction
+        yaw_rate = min(linear_map(abs(angle_diffs.yaw), 0, 180, 0, 2.25), 1) * yaw_turn_direction
+        pitch_rate = min(linear_map(abs(angle_diffs.pitch), 0, 180, 0, 2.25), 1) * pitch_turn_direction
 
         return Rotation(yaw_rate, pitch_rate)
 
 
-    def __compute_move_rates(self, target_position: Vector):
+    def __compute_move_rates(self, target_position: Vector, tolerance = 2):
         '''Calculates proposed strafing (left/right) and movement (forward/backward) speeds in order to move
-        to the given position.
+        to the given position. Optionally specify a tolerance in number of blocks (defaults to 2, since two entities
+        cannot occupy the same block).
         
         Returns the result as a vector, where the x component represents the strafing rate, and the z component
         represents the movement rate.'''
 
         # If we are already at the target position, return the zero vector for the rates
         target_distance = distance(self.state.get_position(), target_position)
-        if equal_tol(target_distance, 0, 1):
+        if equal_tol(target_distance, 0, tolerance):
             return Vector(0, 0, 0)
 
         # Compute signed angle differences and use that to determine side-to-side and forward-backward movement
