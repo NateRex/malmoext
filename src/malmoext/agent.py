@@ -77,7 +77,7 @@ class Agent:
 
     def look_at(self, entity: Union[str, Entity]):
         '''Initiates camera movement of this agent's POV to face another entity, specified either by name or by reference.
-        If multiple entities contain the given name, the closest one will be targeted.
+        If multiple entities exist with the given name, the closest one will be targeted.
         
         Because this transition does not occur instantaneously, this method is intended to be called repeatedly as part
         of the simulation loop.
@@ -88,31 +88,74 @@ class Agent:
         target = entity
         if isinstance(target, str):
             target = self.state.get_entity_by_name(target)
-        
         if target is None:
             return False
         
         turn_rates = self.__compute_turn_rates(target.position)
+        is_looking_at = True
 
         # Modify yaw rate
         if equal_tol(turn_rates.yaw, 0, 0.001):
             self.__host.sendCommand('turn 0')
         else:
             self.__host.sendCommand('turn {}'.format(turn_rates.yaw))
+            is_looking_at = False
     
         # Modify pitch rate
         if equal_tol(turn_rates.pitch, 0, 0.001):
             self.__host.sendCommand('pitch 0')
         else:
             self.__host.sendCommand('pitch {}'.format(turn_rates.pitch))
+            is_looking_at = False
+
+        return is_looking_at
+    
+
+    def move_to(self, entity: Union[str, Entity]):
+        '''Initiates movement of this agent to another entity, specified either by name or by reference. If multiple
+        entities exist with the given name, the closest one will be targeted.
+        
+        Because this transition does not occur instantaneously, this method is inteded to be called repeatedly as part
+        of the simulation loop.
+        
+        Returns true if the agent is currently at the entity (with a tolerance of 1 block, given that two entities cannot
+        always occupy the same block). Returns false otherwise.'''
+
+        target = entity
+        if isinstance(target, str):
+            target = self.state.get_entity_by_name(target)
+        if target is None:
+            return False
         
     
     def __compute_turn_rates(self, target_position: Vector):
         '''Calculates proposed yaw and pitch angle rotations for the camera, in order to face the given position.'''
 
+        # Compute signed angle differences
+        angle_diffs = self.__compute_angle_diffs(target_position)
+        yaw_turn_direction = 1 if angle_diffs.yaw >= 0 else -1
+        pitch_turn_direction = 1 if angle_diffs.pitch >= 0 else -1
+
+        # Compute rotation speeds
+        yaw_rate = min(linear_map(abs(angle_diffs.yaw), 0, 180, 0, 2), 1) * yaw_turn_direction
+        pitch_rate = min(linear_map(abs(angle_diffs.pitch), 0, 180, 0, 2), 1) * pitch_turn_direction
+
+        return Rotation(yaw_rate, pitch_rate)
+
+
+    def __compute_move_rates(self, target_position: Vector):
+        '''Calculates proposed strafing (left/right) and movement (forward/backward) speeds in order to move
+        to the given position.'''
+
+
+
+    def __compute_angle_diffs(self, target_position: Vector):
+        '''Computes the signed angle differences between the agent's line-of-sight and a target
+        position (in degrees). Yaw will be in the range (-180, 180), and pitch will be in the range
+        (-90, 90).'''
+       
         # Get vector from agent to target
         agent_position = self.state.get_position()
-        agent_pov = self.state.get_pov()
         v = vector_to(agent_position, target_position)
         v = normalize(v)
         if is_zero_vector(v, 1.0e-6):
@@ -126,9 +169,12 @@ class Agent:
         target_yaw = math.atan2(-v.x, v.z)
         target_yaw = math.degrees((target_yaw + TWO_PI) % TWO_PI)
 
+        # Get agent and target angles
+        agent_pov = self.state.get_pov()
+
         # Pitch turning direction
-        pitch_turn_direction = 1 if target_pitch > agent_pov.pitch else -1
         pitch_diff = abs(target_pitch - agent_pov.pitch)
+        pitch_diff *= (1 if target_pitch > agent_pov.pitch else -1)
 
         # Yaw turning direction. We want to rotate in whatever direction results in the least amount of turning.
         yaw_diff = abs(agent_pov.yaw - target_yaw)
@@ -137,11 +183,10 @@ class Agent:
         if yaw_diff_2 < yaw_diff:
             yaw_diff = yaw_diff_2
             yaw_turn_direction = -yaw_turn_direction
+        yaw_diff = yaw_diff * yaw_turn_direction
 
-        # Rotation speeds
-        yaw_rate = min(linear_map(yaw_diff, 0, 180, 0, 2), 1) * yaw_turn_direction
-        pitch_rate = min(linear_map(pitch_diff, 0, 180, 0, 2), 1) * pitch_turn_direction
-        return Rotation(yaw_rate, pitch_rate)
+        return Rotation(yaw_diff, pitch_diff)
+
 
 
 # Additional imports to avoid circular dependencies
