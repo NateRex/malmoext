@@ -2,7 +2,7 @@ import malmo.MalmoPython as MalmoPython
 from typing import Union
 from malmoext.scenario_builder import AgentBuilder
 from malmoext.types import Item, Inventory, Entity, Vector, Rotation
-from malmoext.utils import vector_to, normalize, is_zero_vector, linear_map, equal_tol, TWO_PI
+from malmoext.utils import vector_to, normalize, is_zero_vector, linear_map, equal_tol, distance, TWO_PI
 import math
 
 class Agent:
@@ -127,6 +127,8 @@ class Agent:
         if target is None:
             return False
         
+        move_rates = self.__compute_move_rates(target.position)
+        
     
     def __compute_turn_rates(self, target_position: Vector):
         '''Calculates proposed yaw and pitch angle rotations for the camera, in order to face the given position.'''
@@ -145,14 +147,27 @@ class Agent:
 
     def __compute_move_rates(self, target_position: Vector):
         '''Calculates proposed strafing (left/right) and movement (forward/backward) speeds in order to move
-        to the given position.'''
+        to the given position.
+        
+        Returns the result as a vector, where the x component represents the strafing rate, and the z component
+        represents the movement rate.'''
 
+        # If we are already at the target position, return the zero vector for the rates
+        target_distance = distance(self.state.get_position(), target_position)
+        if equal_tol(target_distance, 0, 1):
+            return Vector(0, 0, 0)
+
+        # Compute signed angle differences and use that to determine side-to-side and forward-backward movement
+        angle_diffs = self.__compute_angle_diffs(target_position)
+        strafe_rate = math.sin(math.radians(angle_diffs.yaw))
+        move_rate = math.cos(math.radians(angle_diffs.yaw))
+        return Vector(strafe_rate, 0, move_rate)
 
 
     def __compute_angle_diffs(self, target_position: Vector):
-        '''Computes the signed angle differences between the agent's line-of-sight and a target
-        position (in degrees). Yaw will be in the range (-180, 180), and pitch will be in the range
-        (-90, 90).'''
+        '''Computes the signed angle differences between the agent's line-of-sight and a target position (in degrees).
+        
+        Returns the resulting two angles, where yaw will be in the range (-180, 180), and pitch will be in the range (-90, 90).'''
        
         # Get vector from agent to target
         agent_position = self.state.get_position()

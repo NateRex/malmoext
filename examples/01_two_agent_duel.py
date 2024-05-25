@@ -29,7 +29,7 @@ class TwoAgentDuel(Scenario):
 
 
     def on_tick(self, agents) -> None:
-        agents['agent1'].look_at('agent2')
+        agents['agent1'].move_to('agent2')
         
 
 

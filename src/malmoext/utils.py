@@ -31,6 +31,10 @@ def squared_distance(p1: Vector, p2: Vector):
     return math.pow(p2.x - p1.x, 2) + math.pow(p2.y - p1.y, 2) + math.pow(p2.z - p1.z, 2)
 
 
+def distance(p1: Vector, p2: Vector):
+    '''Returns the distance between two points.'''
+    return math.sqrt(squared_distance(p1, p2))
+
 def magnitude(v: Vector):
     '''Computes the magnitude of a vector'''
     return math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
