@@ -1,5 +1,7 @@
 # MalmoExt
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 The purpose of this project is to provide a wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master) which provides users a programming interface for creating and running scenarios with minimal effort.
 
 A Python wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master), intended to serve the following purposes:
@@ -67,4 +69,4 @@ The following environment variables can optionally be set:
 ## 📃 Additional Documentation
 
 - [API Documentation](./)
-- [Future Features](./)
+- [Planned Features](./FEATURES.md)
