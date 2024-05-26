@@ -43,7 +43,7 @@ class Agent:
     
 
     def sync(self):
-        '''Syncs the data cached on this agent with the latest available data from the Malmo Minecraft server'''
+        '''Syncs the data cached on this agent with the latest available data from the Malmo Minecraft server.'''
         self.state = AgentState(self)
 
 

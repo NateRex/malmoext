@@ -2,8 +2,16 @@
 
 The purpose of this project is to provide a wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master) which provides users a programming interface for creating and running scenarios with minimal effort.
 
+A Python wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master), intended to serve the following purposes:
 
-## Getting Started
+- Allow for easier installation of Malmo
+- Provide a programming interface that streamlines the creation and execution of scenarios.
+- Provide a set of higher-order agent actions for developers to choose from.
+
+
+<br>
+
+## 🔌 Getting Started
 
 Ensure you have the following installed on your machine:
 
@@ -18,7 +26,9 @@ Install the package:
 pip install malmoext
 ```
 
-## Starting Malmo Minecraft
+<br>
+
+## 💻 Starting Malmo Minecraft
 
 Malmo Minecraft must be started prior to running a scenario. *<ins>At least</ins> one instance is required for each agent present in your scenario(s).*
 
@@ -30,7 +40,9 @@ python -m malmoext --ports 10000 10001 ...
 
 Once running, these Malmo Minecraft servers can be reused across multiple scenarios.
 
-## Running a Scenario
+<br>
+
+## 🌍 Running a Scenario
 
 Once one or more instances of Malmo Minecraft is running, you can execute one of your scenarios by running its script:
 
@@ -40,7 +52,9 @@ python myScenario.py
 
 For examples on how to build scenarios, check out the [examples folder](examples).
 
-## Environment Variables
+<br>
+
+## ⚙️ Environment Variables
 
 The following environment variables can optionally be set:
 
@@ -48,3 +62,9 @@ The following environment variables can optionally be set:
 |:---|:---|:---|
 |`MALMO_INSTALL_DIR`|(the current working directory)|The directory that the Malmo Platform should be installed to when starting Malmo Minecraft for the first time. It is recommended that users set this to a constant value in order to avoid having Malmo installed to multiple locations.|
 
+<br>
+
+## 📃 Additional Documentation
+
+- [API Documentation](./)
+- [Future Features](./)

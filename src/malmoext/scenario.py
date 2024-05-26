@@ -119,11 +119,22 @@ class Scenario:
         # While mission is running, repeatedly synchronize the local state with the remote server state,
         # and execute agent actions (assume the time limit is the same across all agents)
         while (agentZero.is_mission_active()):
+
+            # Avoid handing off control while we are still waiting to receive observations for agents
+            all_agents_have_observations = True
+            for agent in self.__agents.values():
+                num_observations = agent.get_host().peekWorldState().number_of_observations_since_last_state
+                all_agents_have_observations = all_agents_have_observations and num_observations > 0
+            if not all_agents_have_observations:
+                continue
+
+            # Sync agent states
             for agent in self.__agents.values():
                 agent.sync()
-                
+
+            # Call handler to perform agent actions
             self.on_tick(self.__agents)
-            time.sleep(0.1)
+            time.sleep(0.05)
 
         print('Mission has ended.')
 

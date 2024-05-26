@@ -14,7 +14,7 @@ class ScenarioBuilder:
 
         self.__description = ''
         self.__time_limit = 3600.0
-        self.__time_of_day = TimeOfDay.noon
+        self.__time_of_day = TimeOfDay.noon.value
         self.world = WorldBuilder()
         self.agents: dict[str, AgentBuilder] = {}
 
