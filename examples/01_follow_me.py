@@ -1,4 +1,4 @@
-from malmoext import *
+from malmoext import Scenario, Vector, Block
 
 class FollowMe(Scenario):
     '''Simple scenario where a computer agent follows a human player for 30 seconds.'''

@@ -1,6 +1,6 @@
 from typing import Any, Union
 from malmoext.types import Block, Mob, Item, Inventory, Vector, Rotation, Entity, InventoryItem
-from malmoext.utils import add_or_append, squared_distance
+from malmoext.utils import Utils
 from malmoext.agent import Agent
 import json
 
@@ -57,7 +57,7 @@ class AgentState:
         closest_sqrd_distance = None
         closest_entity = None
         for entity in self.__nearby_entities[mob_type]:
-            sqrd_distance = squared_distance(self.__position, entity.position)
+            sqrd_distance = Utils.squared_distance(self.__position, entity.position)
             if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
                 closest_sqrd_distance = sqrd_distance
                 closest_entity = entity
@@ -74,7 +74,7 @@ class AgentState:
         for eType in self.__nearby_entities:
             for entity in self.__nearby_entities[eType]:
                 if entity.name == name:
-                    sqrd_distance = squared_distance(self.__position, entity.position)
+                    sqrd_distance = Utils.squared_distance(self.__position, entity.position)
                     if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
                         closest_sqrd_distance = sqrd_distance
                         closest_entity = entity
@@ -170,7 +170,7 @@ class AgentState:
 
             ePos = Vector(obj['x'], obj['y'], obj['z'])
             entity = Entity(obj['id'], eType, obj['name'], ePos, obj.get('quantity', 1))
-            add_or_append(entities, eType, entity)
+            Utils.add_or_append(entities, eType, entity)
         
         return entities
 
@@ -217,7 +217,7 @@ class AgentState:
                 slot = Inventory.Armor(index)
 
             inventoryItem = InventoryItem(iType, obj['quantity'], slot)
-            add_or_append(inventory, iType, inventoryItem)
+            Utils.add_or_append(inventory, iType, inventoryItem)
 
         return inventory
 

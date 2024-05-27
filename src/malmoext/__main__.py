@@ -1,4 +1,4 @@
-import malmoext.malmo_bootstrap
+from malmoext.malmo_bootstrap import MalmoBootstrap
 import argparse
 
 # Parse arguments
@@ -15,4 +15,4 @@ args = parser.parse_args()
 
 # Run Malmo Minecraft instances
 ports = list(map(int, args.ports))
-malmoext.malmo_bootstrap.start(ports)
+MalmoBootstrap.start(ports)

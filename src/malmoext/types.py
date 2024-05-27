@@ -1,4 +1,4 @@
-from typing import Union, NamedTuple
+from typing import Union
 from enum import Enum
 
 class ReflectiveEnum(Enum):
@@ -707,8 +707,39 @@ class Block(ReflectiveEnum):
     yellow_shulker_box = "yellow_shulker_box"
 
 
-# Named tuples
-Vector = NamedTuple('Vector', [('x', float), ('y', float), ('z', float)])
-Rotation = NamedTuple('Rotation', [('yaw', float), ('pitch', float)])
-Entity = NamedTuple('Entity', [('id', str), ('type', Union[Mob, Item]), ('name', str), ('position', Vector), ('quantity', int)])
-InventoryItem = NamedTuple('InventoryItem', [('type', Item), ('quantity', int), ('slot', Union[Inventory.HotBar, Inventory.Main, Inventory.Armor])])
+class Vector:
+    '''A 3-dimensional vector'''
+
+    def __init__(self, x: float, y: float, z: float):
+        self.x = x
+        self.y = y
+        self.z = z
+
+
+class Rotation:
+    '''A rotation in yaw and pitch directions.'''
+
+    def __init__(self, yaw: float, pitch: float):
+        self.yaw = yaw
+        self.pitch = pitch
+
+
+class Entity:
+    '''Metadata describing a mob, drop item, or an agent.'''
+
+    def __init__(self, id: str, eType: Union[Mob, Item], name: str, position: Vector, quantity: int):
+        self.id = id
+        self.type = eType
+        self.name = name
+        self.position = position
+        self.quantity = quantity
+
+
+class InventoryItem:
+    '''Representation of an item inside an agent's inventory'''
+
+    def __init__(self, iType: Item, quantity: int, slot: Union[Inventory.HotBar, Inventory.Main, Inventory.Armor]):
+        self.type = iType
+        self.quantity = quantity
+        self.slot = slot
+

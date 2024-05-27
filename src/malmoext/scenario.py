@@ -1,5 +1,5 @@
 import malmo.MalmoPython as MalmoPython
-import malmoext.malmo_bootstrap as MalmoBootstrap
+from malmoext.malmo_bootstrap import MalmoBootstrap
 from malmo.malmoutils import parse_command_line, get_default_recording_object
 from malmoext.scenario_builder import ScenarioBuilder
 from malmoext.agent import Agent
@@ -77,7 +77,7 @@ class Scenario:
         '''
 
         # Initialize Malmo Platform environment
-        MalmoBootstrap.init()
+        MalmoBootstrap.init_env()
 
         # Construct scenario
         self.build_scenario(self.__builder)

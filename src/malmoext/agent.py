@@ -2,7 +2,7 @@ import malmo.MalmoPython as MalmoPython
 from typing import Union
 from malmoext.scenario_builder import AgentBuilder
 from malmoext.types import Item, Inventory, Entity, Vector, Rotation
-from malmoext.utils import vector_to, normalize, is_zero_vector, linear_map, equal_tol, distance, TWO_PI
+from malmoext.utils import Utils
 import math
 
 class Agent:
@@ -43,8 +43,17 @@ class Agent:
     
 
     def sync(self):
-        '''Syncs the data cached on this agent with the latest available data from the Malmo Minecraft server.'''
-        self.state = AgentState(self)
+        '''Syncs the data cached on this agent with the latest available data from the Malmo Minecraft server. Returns
+        true if new data has been loaded. Returns false otherwise.
+        
+        This method does not need to be called explicitly by users of this library, as it is called automatically during
+        simulation of a scenario.'''
+
+        if self.__host.peekWorldState().number_of_observations_since_last_state > 0:
+            self.state = AgentState(self)
+            return True
+
+        return False
 
 
     def equip(self, item_type: Item) -> bool:
@@ -95,14 +104,14 @@ class Agent:
         is_looking_at = True
 
         # Modify yaw rate
-        if equal_tol(turn_rates.yaw, 0, 0.001):
+        if Utils.equal_tol(turn_rates.yaw, 0, 0.001):
             self.__host.sendCommand('turn 0')
         else:
             self.__host.sendCommand('turn {}'.format(turn_rates.yaw))
             is_looking_at = False
     
         # Modify pitch rate
-        if equal_tol(turn_rates.pitch, 0, 0.001):
+        if Utils.equal_tol(turn_rates.pitch, 0, 0.001):
             self.__host.sendCommand('pitch 0')
         else:
             self.__host.sendCommand('pitch {}'.format(turn_rates.pitch))
@@ -133,14 +142,14 @@ class Agent:
         is_at = True
 
         # Modify left/right movement rate
-        if equal_tol(move_rates.x, 0, 0.001):
+        if Utils.equal_tol(move_rates.x, 0, 0.001):
             self.__host.sendCommand('strafe 0')
         else:
             self.__host.sendCommand('strafe {}'.format(move_rates.x))
             is_at = False
 
         # Modify forward/backward movement rate
-        if equal_tol(move_rates.z, 0, 0.001):
+        if Utils.equal_tol(move_rates.z, 0, 0.001):
             self.__host.sendCommand('move 0')
         else:
             self.__host.sendCommand('move {}'.format(move_rates.z))
@@ -158,8 +167,8 @@ class Agent:
         pitch_turn_direction = 1 if angle_diffs.pitch >= 0 else -1
 
         # Compute rotation speeds
-        yaw_rate = min(linear_map(abs(angle_diffs.yaw), 0, 180, 0, 2.25), 1) * yaw_turn_direction
-        pitch_rate = min(linear_map(abs(angle_diffs.pitch), 0, 180, 0, 2.25), 1) * pitch_turn_direction
+        yaw_rate = min(Utils.linear_map(abs(angle_diffs.yaw), 0, 180, 0, 2.25), 1) * yaw_turn_direction
+        pitch_rate = min(Utils.linear_map(abs(angle_diffs.pitch), 0, 180, 0, 2.25), 1) * pitch_turn_direction
 
         return Rotation(yaw_rate, pitch_rate)
 
@@ -173,8 +182,8 @@ class Agent:
         represents the movement rate.'''
 
         # If we are already at the target position, return the zero vector for the rates
-        target_distance = distance(self.state.get_position(), target_position)
-        if equal_tol(target_distance, 0, tolerance):
+        target_distance = Utils.distance(self.state.get_position(), target_position)
+        if Utils.equal_tol(target_distance, 0, tolerance):
             return Vector(0, 0, 0)
 
         # Compute signed angle differences and use that to determine side-to-side and forward-backward movement
@@ -191,9 +200,9 @@ class Agent:
        
         # Get vector from agent to target
         agent_position = self.state.get_position()
-        v = vector_to(agent_position, target_position)
-        v = normalize(v)
-        if is_zero_vector(v, 1.0e-6):
+        v = Utils.vector_to(agent_position, target_position)
+        v = Utils.normalize(v)
+        if Utils.is_zero_vector(v, 1.0e-6):
             return Rotation(0, 0)
 
         # Target pitch (-90, 90)
@@ -202,7 +211,7 @@ class Agent:
 
         # Target yaw (0, 360)
         target_yaw = math.atan2(-v.x, v.z)
-        target_yaw = math.degrees((target_yaw + TWO_PI) % TWO_PI)
+        target_yaw = math.degrees((target_yaw + Utils.TWO_PI) % Utils.TWO_PI)
 
         # Get agent and target angles
         agent_pov = self.state.get_pov()
