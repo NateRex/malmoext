@@ -157,7 +157,7 @@ class AgentState:
         
         Returns a dictionary containing all nearby entities to the agent, organized by type.'''
         
-        entities: dict[Union[Mob, Item], list[Entity]] = {}
+        entities = {}     # type: dict[Union[Mob, Item], list[Entity]]
         for obj in raw_data['nearby_entities']:
 
             if Item.contains(obj['name']):
@@ -187,7 +187,7 @@ class AgentState:
             raise Exception('Block grid received from server did not match expected observation size')
 
         idx = 0
-        grid: dict[Vector, Block] = {}
+        grid = {}      # type: dict[Vector, Block]
         for x in range(-observable_distances.x, observable_distances.x):
             for z in range(-observable_distances.z, observable_distances.z):
                 for y in range(-observable_distances.y, observable_distances.y):

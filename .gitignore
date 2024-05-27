@@ -163,4 +163,5 @@ cython_debug/
 .vscode
 
 # Project-specific files
-MalmoPlatform/
+MalmoPlatform
+docs

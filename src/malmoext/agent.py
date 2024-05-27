@@ -19,7 +19,7 @@ class Agent:
         self.__name = builder.get_name()
         self.__observable_distances = builder.get_observable_distances()
         self.__host = MalmoPython.AgentHost()
-        self.state: AgentState = None
+        self.state = None   # type: AgentState
 
 
     def get_name(self):

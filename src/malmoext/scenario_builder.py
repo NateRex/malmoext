@@ -16,7 +16,7 @@ class ScenarioBuilder:
         self.__time_limit = 3600.0
         self.__time_of_day = TimeOfDay.noon.value
         self.world = WorldBuilder()
-        self.agents: dict[str, AgentBuilder] = {}
+        self.agents = {}   # type: dict[str, AgentBuilder]
 
     def set_description(self, description):
         '''Set a description for this scenario.'''
@@ -105,7 +105,7 @@ class WorldBuilder:
         
         self.__generator_string = '3;7,2*3,2;1;'
         self.__decorators_xml = ""
-        self.__allowed_to_spawn: set[list[Mob]] = set([])
+        self.__allowed_to_spawn = set()   # type: set[Mob]
 
     def get_mobs_allowed_to_spawn(self):
         '''Returns the set of mob names that are allowed to naturally spawn'''

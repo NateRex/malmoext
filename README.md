@@ -1,5 +1,6 @@
 # MalmoExt
 
+[![Pipeline Status](https://github.com/NateRex/malmoext/actions/workflows/pipeline.yml/badge.svg?branch=master)](https://github.com/NateRex/malmoext/actions/workflows/pipeline.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 The purpose of this project is to provide a wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master) which provides users a programming interface for creating and running scenarios with minimal effort.
@@ -15,12 +16,12 @@ A Python wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/m
 
 ## 🔌 Getting Started
 
-Ensure you have the following installed on your machine:
+Ensure you have the necessary dependencies installed on your machine. The version of Python you need depends on your operating system given Malmo platform requirements.
 
 |Link|Version|
 |:---:|:---|
-|[Python](https://www.python.org/downloads/)|3.6.x|
-|[Java Development Kit](https://openjdk.org/projects/jdk8/)|8|
+|[Java Development Kit](https://openjdk.org/projects/jdk8/)|<ul>8</ul>|
+|[Python](https://www.python.org/downloads/)|<ul><li>3.5.x for Linux</li><li>3.6.x for Windows</li><li>3.7.x for MacOS</li></ul> |
 
 Install the package:
 

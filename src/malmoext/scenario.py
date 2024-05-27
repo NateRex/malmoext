@@ -16,7 +16,7 @@ class Scenario:
 
     def __init__(self):
         self.__builder = ScenarioBuilder()
-        self.__agents: dict[str, Agent] = {}
+        self.__agents = {}    # type: dict[str, Agent]
 
 
     @abstractmethod
