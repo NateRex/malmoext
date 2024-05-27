@@ -4,11 +4,12 @@ on: push
 
 jobs:
 
-  # Build package
+  # Build Package and Generate Documentation
   build:
     name: 🐍 Build
     runs-on: ubuntu-20.04
     steps:
+
     - name: Checkout Project
       uses: actions/checkout@v4
 
@@ -19,7 +20,7 @@ jobs:
       env:
         PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
 
-    - name: Install Dependencies and Build
+    - name: Build Python Package
       env:
         PIP_TRUSTED_HOST: "pypi.python.org pypi.org files.pythonhosted.org"
       run: |
@@ -28,29 +29,56 @@ jobs:
         pip install wheel
         python setup.py bdist_wheel
 
-    - name: Upload Artifacts
+    - name: Build Documentation
+      run: |
+        pip install pdoc3
+        pdoc3 --html src/malmoext -o docs
+
+    - name: Upload Python Package Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: dist/
 
+    - name: Upload Documentation Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation-artifacts
+        path: docs/
 
-  # Publish artifacts
+
+  # Publish Artifacts
   publish:
     name: 📦 Publish
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
     if: startsWith(github.ref, 'refs/tags/')  # only publish on tag pushes
     needs:
     - build
     runs-on: ubuntu-20.04
+    environment:
+      name: github-pages
+      url: docs/malmoext/index.html
     steps:
-    - name: Download Artifacts
+    
+    - name: Download Python Package Artifacts
       uses: actions/download-artifact@v3
       with:
         name: build-artifacts
         path: dist/
 
-    - name: Publish Artifacts
+    - name: Download Documentation Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: documentation-artifacts
+        path: docs/
+
+    - name: Publish Python Package
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+
+    - name: Publish Documentation
+      uses: actions/deploy-pages@v4
