@@ -203,7 +203,7 @@ class AgentState:
 
         raw_inventory = raw_data['inventory']
 
-        inventory: dict[Item, list[InventoryItem]] = {}
+        inventory = {}     # type: dict[Item, list[InventoryItem]]
         for obj in raw_inventory:
             iType = Item(obj['type'])
             index = obj['index']
