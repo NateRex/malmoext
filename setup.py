@@ -1,8 +1,5 @@
 from setuptools import find_packages, setup
 
-with open('README.md', mode='r', encoding='utf8') as f:
-    long_description = f.read()
-
 requirements = []
 with open('requirements.txt', 'r') as fd:
     for line in fd:
@@ -14,7 +11,7 @@ with open('requirements.txt', 'r') as fd:
 setup(
     name='malmoext',
     description='A wrapper for Microsoft\'s Malmo Platform capable of creating automated agent action sequences in Minecraft.',
-    long_description=long_description,
+    long_description='See https://github.com/NateRex/malmoext for more information.',
     license='MIT License',
     url='https://github.com/NateRex/malmoext',
     version='0.36.0.0.1',
