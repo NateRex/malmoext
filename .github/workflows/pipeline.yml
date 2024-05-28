@@ -36,15 +36,15 @@ jobs:
         pdoc3 --html src/malmoext -o docs
 
     - name: Upload Python Package Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
         path: dist/
 
     - name: Upload Documentation Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: documentation-artifacts
+        name: github-pages
         path: docs/
 
   
@@ -63,9 +63,9 @@ jobs:
     steps:
 
     - name: Download Documentation Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: documentation-artifacts
+        name: github-pages
         path: docs/
 
     - name: Publish Documentation
@@ -88,15 +88,15 @@ jobs:
     steps:
     
     - name: Download Python Package Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: build-artifacts
         path: dist/
 
     - name: Download Documentation Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: documentation-artifacts
+        name: github-pages
         path: docs/
 
     - name: Publish Python Package
