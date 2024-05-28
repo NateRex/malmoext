@@ -3,14 +3,15 @@
 [![Pipeline Status](https://github.com/NateRex/malmoext/actions/workflows/pipeline.yml/badge.svg?branch=master)](https://github.com/NateRex/malmoext/actions/workflows/pipeline.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-The purpose of this project is to provide a wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master) which provides users a programming interface for creating and running scenarios with minimal effort.
-
-A Python wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master), intended to serve the following purposes:
+The purpose of this project is to provide a wrapper for Microsoft's [Malmo Platform](https://github.com/microsoft/malmo/tree/master), intended to serve the following purposes:
 
 - Allow for easier installation of Malmo
 - Provide a programming interface that streamlines the creation and execution of scenarios.
 - Provide a set of higher-order agent actions for developers to choose from.
 
+<br>
+
+![malmoext](https://user-images.githubusercontent.com/34667018/62836148-3b3ece00-bc2e-11e9-95e8-ab7f954061d3.gif)
 
 <br>
 
