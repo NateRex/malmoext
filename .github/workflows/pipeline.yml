@@ -31,7 +31,7 @@ jobs:
 
     - name: Build Documentation
       run: |
-        pip install pdoc3
+        pip install setuptools_scm setuptools_git pdoc3
         pdoc3 --html src/malmoext -o docs
 
     - name: Upload Python Package Artifacts
