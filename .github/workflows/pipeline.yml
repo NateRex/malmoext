@@ -47,6 +47,30 @@ jobs:
         name: documentation-artifacts
         path: docs/
 
+  
+  # Upload documentation
+  publish-docs:
+    name: Publish docs
+    needs:
+    - build
+    runs-on: ubuntu-20.04
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: docs/malmoext/index.html
+    steps:
+
+    - name: Download Documentation Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: documentation-artifacts
+        path: docs/
+
+    - name: Publish Documentation
+      uses: actions/deploy-pages@v4
+    
 
   # Publish Artifacts
   publish:
