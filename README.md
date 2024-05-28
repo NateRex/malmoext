@@ -69,5 +69,5 @@ The following environment variables can optionally be set:
 
 ## 📃 Additional Documentation
 
-- [API Documentation](./)
+- [API Documentation](https://naterex.github.io/malmoext/)
 - [Planned Features](./FEATURES.md)

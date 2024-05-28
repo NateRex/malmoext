@@ -42,35 +42,10 @@ jobs:
         path: dist/
 
     - name: Upload Documentation Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-pages-artifact@v1
       with:
-        name: github-pages
-        path: docs/
-
-  
-  # Upload documentation
-  publish-docs:
-    name: Publish docs
-    needs:
-    - build
-    runs-on: ubuntu-20.04
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    environment:
-      name: github-pages
-      url: docs/malmoext/index.html
-    steps:
-
-    - name: Download Documentation Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: github-pages
-        path: docs/
-
-    - name: Publish Documentation
-      uses: actions/deploy-pages@v4
-    
+        path: docs/malmoext
+        
 
   # Publish Artifacts
   publish:
@@ -84,7 +59,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment:
       name: github-pages
-      url: docs/malmoext/index.html
+      url: ${{ steps.documentation.outputs.page_url }}
     steps:
     
     - name: Download Python Package Artifacts
@@ -106,4 +81,5 @@ jobs:
         password: ${{ secrets.PYPI_API_TOKEN }}
 
     - name: Publish Documentation
-      uses: actions/deploy-pages@v4
+      id: documentation
+      uses: actions/deploy-pages@v2
