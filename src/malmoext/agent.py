@@ -15,7 +15,7 @@ class Agent:
     automatically constructed when a scenario is ran.'''
 
     ATTACK_KEEP_DISTANCE = 3
-    '''Distance tolerance when attacking an entity'''
+    '''Distance tolerance (in number of blocks) when attacking an entity'''
 
 
     def __init__(self, builder: AgentBuilder):
