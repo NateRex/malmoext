@@ -42,7 +42,7 @@ jobs:
         path: dist/
 
     - name: Upload Documentation Artifacts
-      uses: actions/upload-pages-artifact@v1
+      uses: actions/upload-pages-artifact@v3
       with:
         path: docs/malmoext
         
@@ -82,4 +82,4 @@ jobs:
 
     - name: Publish Documentation
       id: documentation
-      uses: actions/deploy-pages@v2
+      uses: actions/deploy-pages@v4
