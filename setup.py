@@ -14,7 +14,7 @@ setup(
     long_description='See https://github.com/NateRex/malmoext for more information.',
     license='MIT License',
     url='https://github.com/NateRex/malmoext',
-    version='0.36.0.0.1',
+    version='0.36.0.0.2',
     author='Nate Rex',
     maintainer='Nate Rex',
     install_requires=requirements,
