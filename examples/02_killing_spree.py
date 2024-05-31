@@ -1,19 +1,23 @@
-from malmoext import Scenario, Vector, Block
+from malmoext import Scenario, Vector, Block, Mob, Item, Inventory
 
-class FollowMe(Scenario):
-    '''Scenario where a computer agent follows a human player for 30 seconds.'''
+class KillingSpree(Scenario):
+    '''Scenario where a computer agent repeatedly attacks the closest villager.'''
 
     def build_scenario(self, builder):
         
         # Metadata
-        builder.set_description('Follow Me')
+        builder.set_description('Killing Spree')
         builder.set_time_limit(30)
 
         # Agents
         builder.add_agent('computer')
         builder.agents['computer'].set_position(Vector(0, 4, 0))
-        builder.add_agent('human')
-        builder.agents['human'].set_position(Vector(10, 4, 10))
+        builder.agents['computer'].add_inventory_item(Item.diamond_sword, Inventory.HotBar._0)
+
+        # Mobs
+        builder.world.add_mob(Mob.villager, Vector(8, 4, 8))
+        builder.world.add_mob(Mob.villager, Vector(-8, 4, -8))
+        builder.world.add_mob(Mob.villager, Vector(8, 4, -8))
 
         # Structures
         builder.world.add_line(Block.fence, Vector(-30, 4, -30), Vector(30, 4, -30))
@@ -26,11 +30,10 @@ class FollowMe(Scenario):
     def on_tick(self, agents) -> None:
 
         # Agent actions
-        agents['computer'].look_at('human')
-        agents['computer'].move_to('human', keep_distance=3)
+        agents['computer'].attack(Mob.villager)
         
 
 
 
 # Run scenario
-scenario = FollowMe().run(ports=[10000, 10001])
+scenario = KillingSpree().run(ports=[10000])

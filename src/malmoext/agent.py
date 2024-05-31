@@ -1,8 +1,9 @@
 import malmo.MalmoPython as MalmoPython
 from typing import Union
 from malmoext.scenario_builder import AgentBuilder
-from malmoext.types import Item, Inventory, Entity, Vector, Rotation
+from malmoext.types import Mob, Item, Inventory, Entity, Vector, Rotation
 from malmoext.utils import Utils
+from enum import Enum
 import math
 
 class Agent:
@@ -12,6 +13,9 @@ class Agent:
     
     Instances of this class should not be constructed directly. Instead, they will be
     automatically constructed when a scenario is ran.'''
+
+    ATTACK_KEEP_DISTANCE = 3
+    '''Distance tolerance when attacking an entity'''
 
 
     def __init__(self, builder: AgentBuilder):
@@ -84,7 +88,7 @@ class Agent:
         return True
 
 
-    def look_at(self, entity: Union[str, Entity]):
+    def look_at(self, entity: Union[str, Mob, Entity]):
         '''Initiates camera movement of this agent's POV to face another entity, specified either by name or by reference.
         If multiple entities exist with the given name, the closest one will be targeted.
         
@@ -94,9 +98,7 @@ class Agent:
         Returns true if the agent is currently facing the entity (and thus no further camera change will occur). Returns
         false if the agent is not yet facing the entity, or an entity with the given name does not exist.'''
 
-        target = entity
-        if isinstance(target, str):
-            target = self.state.get_entity_by_name(target)
+        target = self.__resolve_entity(entity)
         if target is None:
             return False
         
@@ -104,14 +106,14 @@ class Agent:
         is_looking_at = True
 
         # Modify yaw rate
-        if Utils.equal_tol(turn_rates.yaw, 0, 0.001):
+        if Utils.equal_tol(turn_rates.yaw, 0, 0.05):
             self.__host.sendCommand('turn 0')
         else:
             self.__host.sendCommand('turn {}'.format(turn_rates.yaw))
             is_looking_at = False
     
         # Modify pitch rate
-        if Utils.equal_tol(turn_rates.pitch, 0, 0.001):
+        if Utils.equal_tol(turn_rates.pitch, 0, 0.05):
             self.__host.sendCommand('pitch 0')
         else:
             self.__host.sendCommand('pitch {}'.format(turn_rates.pitch))
@@ -120,7 +122,7 @@ class Agent:
         return is_looking_at
     
 
-    def move_to(self, entity: Union[str, Entity], keep_distance = 2):
+    def move_to(self, entity: Union[str, Mob, Entity], keep_distance = 2):
         '''Initiates movement of this agent to another entity, specified either by name or by reference. If multiple
         entities exist with the given name, the closest one will be targeted. Optionally specify a number of blocks the
         agent should keep away from the target (defaults to 2, since two entities cannot occupy the same block). This
@@ -132,9 +134,7 @@ class Agent:
         Returns true if the agent is currently at the entity (with a tolerance of 2 blocks, given that two entities cannot
         always occupy the same block). Returns false otherwise.'''
 
-        target = entity
-        if isinstance(target, str):
-            target = self.state.get_entity_by_name(target)
+        target = self.__resolve_entity(entity)
         if target is None:
             return False
         
@@ -156,7 +156,46 @@ class Agent:
             is_at = False
 
         return is_at
+    
+
+    def attack(self, entity: Union[str, Mob, Entity]):
+        '''Initiates an attack against another entity, specified either by name or by reference. If multiple entities
+        exist with the given name, the closest one will be targeted. The attack will be performed using the currently-equipped
+        item.
         
+        If the agent is not currently looking or located at the target, this method will default to performing those actions
+        first.
+        
+        Returns true if the attack was performed successfully. Returns false otherwise.'''
+
+        target = self.__resolve_entity(entity)
+        if target is None:
+            return False
+        
+        # Ensure we are first looking and located at the entity
+        looking_at = self.look_at(entity)
+        located_at = self.move_to(entity, Agent.ATTACK_KEEP_DISTANCE)
+        if not looking_at or not located_at:
+            return False
+        
+        # Perform the attack
+        self.__host.sendCommand('attack 1')
+        self.__host.sendCommand('attack 0')
+        return True
+        
+
+    def __resolve_entity(self, entity: Union[str, Entity]):
+        '''If given the name of an entity, this method will return the closest entity to the agent containing that name (or None if
+        no entity with that name could be located). If given an entity reference, this method will return that reference as-is.'''
+        
+        target = entity
+        if isinstance(target, Enum):
+            target = target.value
+        if isinstance(target, str):
+            target = self.state.get_entity_by_name(target)
+
+        return target
+
     
     def __compute_turn_rates(self, target_position: Vector):
         '''Calculates proposed yaw and pitch angle rotations for the camera, in order to face the given position.'''
