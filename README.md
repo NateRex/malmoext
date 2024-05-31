@@ -71,4 +71,4 @@ The following environment variables can optionally be set:
 ## 📃 Additional Documentation
 
 - [API Documentation](https://naterex.github.io/malmoext/)
-- [Planned Features](./FEATURES.md)
+- [Planned Features](https://github.com/users/NateRex/projects/2)
