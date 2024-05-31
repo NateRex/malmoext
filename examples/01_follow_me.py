@@ -1,7 +1,7 @@
 from malmoext import Scenario, Vector, Block
 
 class FollowMe(Scenario):
-    '''Simple scenario where a computer agent follows a human player for 30 seconds.'''
+    '''Scenario where a computer agent follows a human player for 30 seconds.'''
 
     def build_scenario(self, builder):
         

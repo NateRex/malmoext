@@ -120,12 +120,8 @@ class Scenario:
         # and execute agent actions (assume the time limit is the same across all agents)
         while (agentZero.is_mission_active()):
 
-            # Avoid handing off control while we are still waiting to receive observations for agents
-            all_agents_have_observations = True
-            for agent in self.__agents.values():
-                num_observations = agent.get_host().peekWorldState().number_of_observations_since_last_state
-                all_agents_have_observations = all_agents_have_observations and num_observations > 0
-            if not all_agents_have_observations:
+            # Avoid handing off control while we are still waiting to receive observations for one or more agents
+            if not self.__all_agents_have_observations():
                 continue
 
             # Sync agent states
@@ -134,6 +130,7 @@ class Scenario:
 
             # Call handler to perform agent actions
             self.on_tick(self.__agents)
+
             time.sleep(0.05)
 
         print('Mission has ended.')
@@ -176,6 +173,7 @@ class Scenario:
                 exit(1)
         print("startMission called okay.")
 
+
     def __wait_for_mission_start(self) -> None:
         '''This method will block execution until all given hosts have succesfully started their mission. If any host
         fails to begin their mission, a timeout error will occur and the program will exit.'''
@@ -201,3 +199,13 @@ class Scenario:
             print("Timed out waiting for mission to begin. Bailing.")
             exit(1)
         print("Mission has started.")
+
+
+    def __all_agents_have_observations(self):
+        '''Returns true if all agents have a received a new observation from the server. Returns false otherwise.'''
+
+        for agent in self.__agents.values():
+            num_observations = agent.get_host().peekWorldState().number_of_observations_since_last_state
+            if num_observations == 0:
+                return False
+        return True
