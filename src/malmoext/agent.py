@@ -60,6 +60,14 @@ class Agent:
         return False
 
 
+    def do_nothing(self):
+        '''Halts all movement and ongoing actions for this agent.'''
+        self.__host.sendCommand('turn 0')
+        self.__host.sendCommand('pitch 0')
+        self.__host.sendCommand('strafe 0')
+        self.__host.sendCommand('move 0')
+
+
     def equip(self, item_type: Item) -> bool:
         '''Equips an item from this agent's inventory. If the item does not already exist in the agent's hotbar,
         it will be swapped with an item from the hotbar. Returns true if successful. Returns false otherwise.'''
@@ -103,23 +111,21 @@ class Agent:
             return False
         
         turn_rates = self.__compute_turn_rates(target.position)
-        is_looking_at = True
 
         # Modify yaw rate
-        if Utils.equal_tol(turn_rates.yaw, 0, 0.05):
+        if Utils.equal_tol(turn_rates.yaw, 0, 0.001):
             self.__host.sendCommand('turn 0')
         else:
             self.__host.sendCommand('turn {}'.format(turn_rates.yaw))
-            is_looking_at = False
     
         # Modify pitch rate
-        if Utils.equal_tol(turn_rates.pitch, 0, 0.05):
+        if Utils.equal_tol(turn_rates.pitch, 0, 0.001):
             self.__host.sendCommand('pitch 0')
         else:
             self.__host.sendCommand('pitch {}'.format(turn_rates.pitch))
-            is_looking_at = False
 
-        return is_looking_at
+        # Use a slightly higher tolerance for reporting success
+        return Utils.equal_tol(turn_rates.yaw, 0, 0.05) and Utils.equal_tol(turn_rates.pitch, 0, 0.05)
     
 
     def move_to(self, entity: Union[str, Mob, Entity], keep_distance = 2):

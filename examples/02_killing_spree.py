@@ -30,7 +30,12 @@ class KillingSpree(Scenario):
     def on_tick(self, agents) -> None:
 
         # Agent actions
-        agents['computer'].attack(Mob.villager)
+        closest_villager = agents['computer'].state.get_entity_by_type(Mob.villager)
+        if closest_villager is not None:
+            agents['computer'].attack(closest_villager)
+        else:
+            agents['computer'].do_nothing()
+
         
 
 
