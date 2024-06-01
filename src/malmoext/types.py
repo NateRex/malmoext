@@ -742,4 +742,3 @@ class InventoryItem:
         self.type = iType
         self.quantity = quantity
         self.slot = slot
-
