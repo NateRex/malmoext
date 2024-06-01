@@ -8,7 +8,6 @@ class AgentState:
     '''An AgentState represents the observable world from the perspective of a single agent.
     It represents an alternative representation of the JSON data provided by Malmo.'''
 
-
     def __init__(self, agent: Agent):
         '''Constructor. Accepts the agent whose perspective this state represents.'''
         
@@ -74,13 +73,13 @@ class AgentState:
 
         if mob_type not in self.__nearby_entities:
             return None
-        
-        # Ignore items near positions we've recently traded at
-        ignore_positions = self._
 
         closest_sqrd_distance = None
         closest_entity = None
         for entity in self.__nearby_entities[mob_type]:
+            if self.__is_item_near_recent_trade(entity):
+                continue
+
             sqrd_distance = Utils.squared_distance(self.__position, entity.position)
             if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
                 closest_sqrd_distance = sqrd_distance
@@ -98,6 +97,9 @@ class AgentState:
         closest_entity = None
         for eType in self.__nearby_entities:
             for entity in self.__nearby_entities[eType]:
+                if self.__is_item_near_recent_trade(entity):
+                    continue
+
                 if entity.name == name:
                     sqrd_distance = Utils.squared_distance(self.__position, entity.position)
                     if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
@@ -105,6 +107,21 @@ class AgentState:
                         closest_entity = entity
         
         return closest_entity
+
+
+    def __is_item_near_recent_trade(self, entity: Entity):
+        '''Returns true if the given entity is a drop item that exists nearby a position where the agent
+        recently performed a trade. Returns false otherwise.'''
+
+        if not Item.contains(entity.type):
+            return False
+
+        for pos in self.__recent_trade_positions:
+            distance = Utils.distance(entity.position, pos)
+            if distance < Agent.TRADE_IGNORE_DISTANCE:
+                return True
+
+        return False
 
 
     def get_nearby_block(self, rel_pos: Vector):

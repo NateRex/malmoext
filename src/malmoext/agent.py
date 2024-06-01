@@ -19,7 +19,10 @@ class Agent:
     GIVE_KEEP_DISTANCE = 4
     '''Distance tolerance (in number of blocks) when giving an item to an entity'''
 
-    TRADE_IGNORE_TIME = 10
+    TRADE_IGNORE_DISTANCE = 3
+    '''Distance (in number of blocks) from recent trade positions that items will be ignored'''
+
+    TRADE_IGNORE_TIME = 70
     '''Number of clock ticks an agent will ignore recently traded items for'''
 
 
@@ -205,8 +208,8 @@ class Agent:
         if not self.equip(item):
             return False
         
+        self.__recent_trade_positions[target.position] = Agent.TRADE_IGNORE_TIME
         self.__host.sendCommand('discardCurrentItem')
-        print("THREW ITEM ========================================")
         return True
 
 
@@ -216,14 +219,14 @@ class Agent:
         
         This method is not intended to be called directly by users of this library.'''
 
+        # Decrement timers for recent trade positions
+        self.__recent_trade_positions = {key:(val - 1) for key, val in
+                self.__recent_trade_positions.items() if val > 1}
+
         # Update agent state
         if self.__host.peekWorldState().number_of_observations_since_last_state > 0:
             self.state = AgentState(self)
             return True
-
-        # Decrement timers for recent trades
-        self.__recent_trade_targets = {key:(val - 1) for key, val in
-                self.__recent_trade_targets.items() if val > 1}
 
         return False
     

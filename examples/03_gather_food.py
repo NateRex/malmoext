@@ -26,9 +26,10 @@ class GatherFood(Scenario):
         builder.world.add_line(Block.fence, Vector(-30, 4, 30), Vector(-30, 4, -30))
 
         # Items
-        builder.world.add_item(Item.baked_potato, Vector(-8, 4, -8))
-        builder.world.add_item(Item.baked_potato, Vector(-8, 4, 8))
-        builder.world.add_item(Item.baked_potato, Vector(8, 4, -8))
+        # builder.world.add_item(Item.baked_potato, Vector(-8, 6, -8))
+        # builder.world.add_item(Item.baked_potato, Vector(-8, 6, 8))
+        # builder.world.add_item(Item.baked_potato, Vector(8, 6, -8))
+        # builder.world.add_item(Item.diamond, Vector(8, 8, -8))
 
 
 
@@ -36,18 +37,18 @@ class GatherFood(Scenario):
 
         if agents['computer'].state.has_inventory_item(Item.baked_potato):
             # Agent has food. Give it to the human player.
-            # Pause momentarily to give the human time to pick it up.
             agents['computer'].give_item(Item.baked_potato, 'human')
 
         elif agents['computer'].state.has_nearby_entity(Item.baked_potato):
             # Food is lying nearby. Go and pick it up.
+            agents['computer'].look_at(Item.baked_potato)
             agents['computer'].move_to(Item.baked_potato)
 
         else:
             # Nothing to do
             agents['computer'].do_nothing()
 
-        
+
 
 
 # Run scenario
