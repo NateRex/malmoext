@@ -8,7 +8,6 @@ class AgentState:
     '''An AgentState represents the observable world from the perspective of a single agent.
     It represents an alternative representation of the JSON data provided by Malmo.'''
 
-
     def __init__(self, agent: Agent):
         '''Constructor. Accepts the agent whose perspective this state represents.'''
         
@@ -21,6 +20,7 @@ class AgentState:
         self.__nearby_entities = self.__parse_nearby_entities(raw_data)
         self.__inventory = self.__parse_inventory(raw_data)
         self.__equipped_slot = self.__parse_equipped_slot(raw_data)
+        self.__recent_trade_positions = agent._get_recent_trade_positions()
 
 
     def get_position(self):
@@ -33,46 +33,73 @@ class AgentState:
         return self.__pov
 
 
-    def get_entities(self):
+    def has_nearby_entity(self, aType: Union[Mob, Item]):
+        '''Returns true if an entity with the given type exists within the agent's observable range.
+        Returns false otherwise.'''
+
+        return self.__get_entity_by_type(aType) is not None
+
+
+    def get_nearby_entities(self):
         '''Returns a dictionary containing all entities nearby the agent, organized by type.'''
+        
         return self.__nearby_entities
     
     
-    def get_entities(self, mob_type: Mob):
-        '''Returns a list containing all nearby entities of the given mob type.'''
+    def get_nearby_entities(self, aType: Union[Mob, Item]):
+        '''Returns a list containing all nearby entities of the given type.'''
         
-        if mob_type not in self.__nearby_entities:
+        if aType not in self.__nearby_entities:
             return []
         
-        return self.__nearby_entities[mob_type]
+        return self.__nearby_entities[aType]
 
 
-    def get_entity_by_type(self, mob_type: Mob):
-        '''Returns the closest entity to the agent containing the given type. Returns None if no entity with that
+    def get_nearby_entity(self, aType: Union[Mob, Item, str]):
+        '''Returns the closest entity to the agent, specified either by name or by type. Ignores any items that
+        have been recently given to another entity. Returns None if no entity could be found using the information
+        provided.'''
+
+        if isinstance(aType, str):
+            return self.__get_entity_by_name(aType)
+        else:
+            return self.__get_entity_by_type(aType)
+
+    
+    def __get_entity_by_type(self, mob_type: Union[Mob, Item]):
+        '''Returns the closest entity to the agent containing the given type. Ignores any items that
+        have been recently given to another entity. Returns None if no entity with that
         type exists within the agent's observable range.'''
 
         if mob_type not in self.__nearby_entities:
             return None
-        
+
         closest_sqrd_distance = None
         closest_entity = None
         for entity in self.__nearby_entities[mob_type]:
+            if self.__is_item_near_recent_trade(entity):
+                continue
+
             sqrd_distance = Utils.squared_distance(self.__position, entity.position)
             if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
                 closest_sqrd_distance = sqrd_distance
                 closest_entity = entity
         
         return closest_entity
+    
 
-
-    def get_entity_by_name(self, name: str):
-        '''Returns the closest entity to the agent containing the given name. Returns None if no entity with that
-        name exists within the agent's observable range.'''
+    def __get_entity_by_name(self, name: str):
+        '''Returns the closest entity to the agent containing the given name. Ignores any items that
+        have been recently given to another entity. Returns None if no entity with that name exists
+        within the agent's observable range.'''
 
         closest_sqrd_distance = None
         closest_entity = None
         for eType in self.__nearby_entities:
             for entity in self.__nearby_entities[eType]:
+                if self.__is_item_near_recent_trade(entity):
+                    continue
+
                 if entity.name == name:
                     sqrd_distance = Utils.squared_distance(self.__position, entity.position)
                     if (closest_entity is None) or (sqrd_distance < closest_sqrd_distance):
@@ -80,6 +107,21 @@ class AgentState:
                         closest_entity = entity
         
         return closest_entity
+
+
+    def __is_item_near_recent_trade(self, entity: Entity):
+        '''Returns true if the given entity is a drop item that exists nearby a position where the agent
+        recently performed a trade. Returns false otherwise.'''
+
+        if not Item.contains(entity.type):
+            return False
+
+        for pos in self.__recent_trade_positions:
+            distance = Utils.distance(entity.position, pos)
+            if distance < Agent.TRADE_IGNORE_DISTANCE:
+                return True
+
+        return False
 
 
     def get_nearby_block(self, rel_pos: Vector):
@@ -95,6 +137,12 @@ class AgentState:
         of the agent.'''
 
         return self.__grid[rel_pos]
+
+
+    def has_inventory_item(self, item_type: Item):
+        '''Returns true if the given item exists in the agent's inventory. Returns false otherwise.'''
+
+        return item_type in self.__inventory
 
 
     def get_inventory_item(self, item_type: Item):
@@ -225,4 +273,13 @@ class AgentState:
     def __parse_equipped_slot(self, raw_data: Any):
         '''Parses a raw observation object to determine the currently equipped inventory slot of the agent.'''
 
-        return raw_data['currentItemIndex']
+        index = raw_data['currentItemIndex']
+
+        if Inventory.HotBar.contains(index):
+            return Inventory.HotBar(index)
+        
+        elif Inventory.Main.contains(index):
+            return Inventory.Main(index)
+        
+        else:
+            return Inventory.Armor(index)

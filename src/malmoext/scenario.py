@@ -126,7 +126,7 @@ class Scenario:
 
             # Sync agent states
             for agent in self.__agents.values():
-                agent.sync()
+                agent._sync()
 
             # Call handler to perform agent actions
             self.on_tick(self.__agents)
