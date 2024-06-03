@@ -26,10 +26,9 @@ class GatherFood(Scenario):
         builder.world.add_line(Block.fence, Vector(-30, 4, 30), Vector(-30, 4, -30))
 
         # Items
-        # builder.world.add_item(Item.baked_potato, Vector(-8, 6, -8))
-        # builder.world.add_item(Item.baked_potato, Vector(-8, 6, 8))
-        # builder.world.add_item(Item.baked_potato, Vector(8, 6, -8))
-        # builder.world.add_item(Item.diamond, Vector(8, 8, -8))
+        builder.world.add_item(Item.baked_potato, Vector(-8, 6, -8))
+        builder.world.add_item(Item.baked_potato, Vector(-8, 6, 8))
+        builder.world.add_item(Item.baked_potato, Vector(8, 6, -8))
 
 
 
